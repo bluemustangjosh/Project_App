@@ -1,5 +1,5 @@
 read me 
 
-Bluemustangjosh Joshua Medrano ID:20061694
-Raude Flores
-Luis Cavazos (Debs305)
+Joshua Medrano: Bluemustangjosh
+Raudel Flores: ElRaudelFG
+Luis Cavazos: Debs305
