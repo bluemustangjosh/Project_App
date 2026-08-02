@@ -1,5 +1,2 @@
-read me 
-
-Joshua Medrano: Bluemustangjosh ID:20061694
-Raudel Flores: ElRaudelFG
-Luis Cavazos: Debs305
+Read me
+This branch is currently going to be used by Raudel Flores Gomez to implement and design the class implementation system for the application 
