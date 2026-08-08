@@ -15,3 +15,15 @@ mydb.py
 # Python cache
 __pycache__/
 *.pyc
+
+# Django
+*.log
+media/
+staticfiles/
+
+# Env/secrets
+.env
+
+# Editor/OS junk
+.vscode/
+.DS_Store

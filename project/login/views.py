@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect('chat_home')  # wherever your homework-chat dashboard lives
+        return redirect('home')  # wherever your homework-chat dashboard lives
 
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -13,11 +13,11 @@ def login_view(request):
 
         if user is not None:
             login(request, user)
-            next_url = request.POST.get('next') or 'chat_home'
+            next_url = request.POST.get('next') or 'home'
             return redirect(next_url)
         else:
-            return render(request, 'testApp/login.html', {
+            return render(request, 'login/login.html', {
                 'error': "Your username and password didn't match. Please try again."
             })
 
-    return render(request, 'testApp/login.html')
+    return render(request, 'login/login.html')
