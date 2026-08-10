@@ -25,4 +25,4 @@ Other: WebSockets for chat?
 
 Purpose
 
-Built as a software engineering course project, this app aims to solve the disconnect between rigid LMS platforms and how students actually collaborate — combining assignment tracking with real peer interaction in one lightweight tool.
+Built as a software engineering course project, this app aims to solve the disconnect between rigid LMS platforms and how students actually collaborate — combining assignment tracking with real peer interaction in one lightweight tool!
