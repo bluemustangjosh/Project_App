@@ -4,11 +4,11 @@ Joshua Medrano: Bluemustangjosh ID:20061694
 Raudel Flores: ElRaudelFG ID:20614875
 Luis Cavazos: Debs305 ID:20557226
 
-StudyDesk — Collaborative Homework & Class Tracker
+📚 StudyDesk — Collaborative Homework & Class Tracker
 
 A web-based academic organization platform designed for college students, inspired by tools like Canvas and Brightspace but built for peer-to-peer collaboration. Students can create their own accounts, set up or join classes, connect with classmates, and stay on top of coursework — all through a clean, minimalist interface.
 
-Features
+✨ Features
 Account System — Secure user registration and login, with personalized profiles for each student.
 Class Management — Users can create classes or join existing ones, organizing coursework by topic and keeping everything centralized.
 Peer Connections — Add classmates and connect across shared classes, similar to a friends/contacts system.
@@ -17,12 +17,16 @@ Class Chat Rooms — Real-time chat rooms scoped to each class for discussion, q
 Notification Bar — Stay updated on upcoming assignments and deadlines without digging through menus.
 Customizable UI — Personalize your dashboard/profile experience.
 Simplistic, Eye-Friendly Design — Minimal, distraction-free UI focused on readability and ease of use.
-Tech Stack
+🛠️ Tech Stack
 Backend: Django
-Frontend:  HTML/CSS/JS, Bootstrap
-Database: firebase / SQLite / PostgreSQL
-Other: WebSockets for chat?
-
-Purpose
+Frontend: [ HTML/CSS/JS, Bootstrap]
+Database: SQLite and will be adding a cloud base feature later
+Other: [WebSockets for chat?]
+🎯 Purpose
 
 Built as a software engineering course project, this app aims to solve the disconnect between rigid LMS platforms and how students actually collaborate — combining assignment tracking with real peer interaction in one lightweight tool.
+
+UPDATE: 08-11-26 - connected landing page to login page. From the login page the program will check to see if you already have classes. If not, it will force you to the add classes page. The databases for the classes and students have been successfully connected
+when logging in or adding classes.
+
+Planned Updates - our next sprint is to finish the home page after logging in. This will show the schedule and the chats for each class. 
