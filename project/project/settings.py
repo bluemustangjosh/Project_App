@@ -83,6 +83,8 @@ DATABASES = {
     }
 }
 
+#session expieration
+SESSION_EXPEIRES_AT_BROWSER_CLOSE = True
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators

@@ -13,7 +13,7 @@ def login_view(request):
 
         if user is not None:
             login(request, user)
-            next_url = request.POST.get('next') or 'home'
+            next_url = request.POST.get('next') or 'class_list'  
             return redirect(next_url)
         else:
             return render(request, 'login/login.html', {
