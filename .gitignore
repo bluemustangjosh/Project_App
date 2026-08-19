@@ -16,3 +16,4 @@ mydb.py
 __pycache__/
 *.pyc
 .DS_Store
+project/.DS_Store
