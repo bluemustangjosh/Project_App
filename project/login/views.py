@@ -25,3 +25,8 @@ def login_view(request):
             })
 
     return render(request, 'login/login.html')
+
+def logout_view(request):
+    # Clear the session and send user back to login page
+    request.session.flush()
+    return redirect('login')

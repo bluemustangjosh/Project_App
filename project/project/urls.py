@@ -6,10 +6,12 @@ urlpatterns = [
     path('', landing, name='landing'),
     path('admin/', admin.site.urls),
 
-    # MOVE THIS ABOVE testApp
+    # login app MUST be included
+    path('login/', include('login.urls')),
+
+    # classes
     path('classes/', include('classes.urls')),
 
-    # This must be LAST because it catches everything
+    # testApp last because it catches root-level routes
     path('', include('testApp.urls')),
 ]
-#project urls.py this is basically for having all url paths under one folder 
