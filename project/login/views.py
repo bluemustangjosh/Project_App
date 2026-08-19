@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from testApp.models import Student
 
-
 def login_view(request):
 
     if request.method == 'POST':
@@ -13,7 +12,13 @@ def login_view(request):
 
         if student:
             request.session['student_id'] = student.id  # Store student ID in session
-            return redirect('home')  # this will be changed to the student home page once it is created
+
+            # NEW LOGIC: check if student has classes
+            if student.classes.count() == 0:
+                return redirect('class_list')   # send them to class_list.html
+            else:
+                return redirect('home')         # send them to home page
+
         else:
             return render(request, 'login/login.html', {
                 'error': "Invalid username or password."

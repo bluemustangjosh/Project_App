@@ -10,16 +10,33 @@
     <div class="container mt-5" style="max-width: 600px;">
         <h1 class="mb-4">My Classes</h1>
 
-        <form method="POST" class="d-flex gap-2 mb-4">
+        <!-- Add Class Form -->
+        <form method="POST" action="{% url 'class_list' %}" class="mb-4">
             {% csrf_token %}
-            <input type="text" name="name" class="form-control" placeholder="Enter class name" required>
+
+            <div class="mb-3">
+                <label class="form-label">Class Name</label>
+                <input type="text" name="name" class="form-control" placeholder="Intro to Computer Science" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Class Code</label>
+                <input type="text" name="code" class="form-control" placeholder="2103" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Section</label>
+                <input type="text" name="section" class="form-control" placeholder="03" required>
+            </div>
+
             <button type="submit" class="btn btn-primary">Add Class</button>
         </form>
 
+        <!-- Class List -->
         <ul class="list-group">
         {% for class in classes %}
             <li class="list-group-item d-flex justify-content-between align-items-center">
-                {{ class.name }}
+                {{ class.name }} ({{ class.code }}) - Section {{ class.section }}
                 <a href="{% url 'delete_class' class.id %}" class="btn btn-sm btn-outline-danger">Delete</a>
             </li>
         {% empty %}
