@@ -12,3 +12,4 @@ urlpatterns = [
     # This must be LAST because it catches everything
     path('', include('testApp.urls')),
 ]
+#project urls.py this is basically for having all url paths under one folder 
