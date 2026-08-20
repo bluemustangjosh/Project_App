@@ -1,259 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sign In - StudyDesk</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<style>
-    :root {
-        --sd-cream: #FBF3E7;
-        --sd-cream-card: #FFFDF9;
-        --sd-orange: #E8734A;
-        --sd-orange-dark: #D9612F;
-        --sd-text: #3A3A3A;
-        --sd-text-muted: #8A8378;
-        --sd-border: #E7DFCF;
-        --sd-red: #C0392B;
-        --sd-red-bg: #FBEAEA;
-    }
- 
-    body {
-        background-color: var(--sd-cream);
-        color: var(--sd-text);
-        font-family: 'Segoe UI', system-ui, sans-serif;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-    }
- 
-    .navbar {
-        background-color: var(--sd-cream);
-        border-bottom: 1px solid var(--sd-border);
-    }
- 
-    .navbar-brand {
-        font-weight: 700;
-        color: var(--sd-text) !important;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
- 
-    .brand-icon {
-        width: 36px;
-        height: 36px;
-        background-color: var(--sd-orange);
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 1.1rem;
-    }
- 
-    .auth-wrap {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 40px 20px;
-    }
- 
-    .login-card {
-        background-color: var(--sd-cream-card);
-        border: 1px solid var(--sd-border);
-        border-radius: 14px;
-        width: 100%;
-        max-width: 400px;
-        padding: 40px 36px;
-    }
- 
-    .login-header {
-        text-align: center;
-        margin-bottom: 30px;
-    }
- 
-    .login-header .logo-circle {
-        width: 56px;
-        height: 56px;
-        border-radius: 14px;
-        background-color: var(--sd-orange);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 16px;
-        font-size: 24px;
-        color: white;
-    }
- 
-    .login-header h1 {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--sd-text);
-        margin-bottom: 6px;
-    }
- 
-    .login-header p {
-        font-size: 0.9rem;
-        color: var(--sd-text-muted);
-        margin-bottom: 0;
-    }
- 
-    .form-group {
-        margin-bottom: 18px;
-    }
- 
-    .form-group label {
-        display: block;
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: var(--sd-text);
-        margin-bottom: 6px;
-    }
- 
-    .form-group input {
-        width: 100%;
-        padding: 11px 14px;
-        border: 1.5px solid var(--sd-border);
-        border-radius: 8px;
-        font-size: 0.95rem;
-        background: #fff;
-        outline: none;
-        transition: border-color 0.2s, box-shadow 0.2s;
-    }
- 
-    .form-group input:focus {
-        border-color: var(--sd-orange);
-        box-shadow: 0 0 0 3px rgba(232, 115, 74, 0.15);
-    }
- 
-    .options-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 22px;
-        font-size: 0.85rem;
-    }
- 
-    .remember-me {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        color: var(--sd-text-muted);
-    }
- 
-    .remember-me input {
-        width: auto;
-    }
- 
-    .options-row a {
-        color: var(--sd-orange);
-        text-decoration: none;
-        font-weight: 500;
-    }
-    .options-row a:hover {
-        text-decoration: underline;
-        color: var(--sd-orange-dark);
-    }
- 
-    .btn-submit {
-        width: 100%;
-        padding: 12px;
-        background-color: var(--sd-orange);
-        border: none;
-        color: white;
-        border-radius: 8px;
-        font-size: 0.95rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background-color 0.2s;
-    }
-    .btn-submit:hover {
-        background-color: var(--sd-orange-dark);
-    }
- 
-    .signup-link {
-        text-align: center;
-        margin-top: 22px;
-        font-size: 0.9rem;
-        color: var(--sd-text-muted);
-    }
- 
-    .signup-link a {
-        color: var(--sd-orange);
-        font-weight: 600;
-        text-decoration: none;
-    }
-    .signup-link a:hover {
-        text-decoration: underline;
-        color: var(--sd-orange-dark);
-    }
- 
-    .error-box {
-        background: var(--sd-red-bg);
-        border: 1px solid #F0C7C0;
-        color: var(--sd-red);
-        padding: 10px 14px;
-        border-radius: 8px;
-        font-size: 0.85rem;
-        margin-bottom: 18px;
-    }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyDesk | Your homework, organized.</title>
+    <style>
+        :root { --paper:#fff8ee; --ink:#241609; --orange:#ff4f13; --line:#ddbf97; }
+        * { box-sizing: border-box; }
+        body { margin:0; min-height:100vh; overflow-x:hidden; background:var(--paper); color:var(--ink); font-family:Arial, Helvetica, sans-serif; }
+        .shape { position:fixed; pointer-events:none; opacity:.95; }
+        .sun { width:155px; height:155px; border-radius:0 0 100% 0; top:0; left:0; background:#ffe3a3; }
+        .dot { width:60px; height:60px; border-radius:50%; left:7.3%; top:23.5%; background:#bee4b6; }
+        .corner { width:118px; height:132px; right:-27px; top:8%; background:#d5e1e8; transform:rotate(24deg); }
+        .diamond { width:40px; height:40px; right:9.8%; top:35%; background:#ffdb83; transform:rotate(45deg); }
+        .square { width:80px; height:80px; bottom:6.5%; left:2.3%; background:#ead4e3; transform:rotate(14deg); }
+        .orb { width:280px; height:280px; right:5%; bottom:-85px; border-radius:50%; background:#ffd9c9; }
+        .dash { width:60px; height:20px; top:4.4%; left:39.7%; background:#ff8d70; }
+        main { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:34px 20px; position:relative; }
+        .brand { text-align:center; margin-bottom:40px; }
+        .brand-line { display:flex; align-items:center; justify-content:center; gap:13px; }
+        .brand-icon { width:45px; height:45px; border-radius:9px; background:var(--orange); color:#fff; display:grid; place-items:center; font-size:26px; font-weight:bold; line-height:1; }
+        .brand h1 { margin:0; font-family:Georgia, serif; font-weight:500; font-size:34px; letter-spacing:-1.4px; }
+        .brand p { margin:11px 0 0; color:#774313; font-size:16px; }
+        .auth-card { width:min(450px, 100%); background:#fffaf2; border:2px solid var(--ink); border-radius:13px; box-shadow:8px 8px 0 var(--ink); padding:28px 32px 30px; }
+        .tabs { display:grid; grid-template-columns:1fr 1fr; border-bottom:2px solid #d8c29e; margin-bottom:25px; }
+        .tab { appearance:none; border:0; cursor:pointer; background:transparent; color:#6d3a09; font-size:15px; padding:14px 4px 11px; border-bottom:3px solid transparent; margin-bottom:-2px; }
+        .tab.active { color:var(--orange); border-color:var(--orange); }
+        .panel { display:none; }
+        .panel.active { display:block; }
+        .field { margin:0 0 17px; }
+        label { display:block; font-family:"Courier New", monospace; font-size:14px; font-weight:700; color:#70400d; margin-bottom:8px; text-transform:uppercase; }
+        input { width:100%; height:47px; padding:11px 14px; border:2px solid var(--line); border-radius:6px; background:#fffaf4; color:var(--ink); font-size:14px; outline:none; }
+        input:focus { border-color:var(--orange); box-shadow:0 0 0 3px #ffe1d5; }
+        .submit { width:100%; margin-top:3px; min-height:52px; border:2px solid var(--ink); border-radius:6px; background:var(--orange); box-shadow:3px 3px 0 var(--ink); color:white; font-size:15px; font-weight:700; cursor:pointer; }
+        .submit:hover { background:#ed3f08; transform:translate(1px, 1px); box-shadow:2px 2px 0 var(--ink); }
+        .switch, .forgot { color:#724313; font-size:13px; text-align:center; margin:17px 0 0; }
+        .switch button, .forgot button { border:0; cursor:pointer; padding:0; background:transparent; color:var(--orange); font:inherit; font-weight:700; text-decoration:underline; }
+        .notice { padding:11px 13px; border-radius:6px; margin:0 0 18px; font-size:13px; line-height:1.4; }
+        .notice.error { background:#fff0eb; border:1px solid #ed8569; color:#9d280d; }
+        .notice.success { background:#edf8ea; border:1px solid #95c98a; color:#2c6a25; }
+        .subjects { display:flex; justify-content:center; flex-wrap:wrap; gap:8px; margin-top:27px; }
+        .subject { padding:4px 11px; border-radius:18px; border:1px solid currentColor; font:700 12px "Courier New", monospace; }
+        .math { color:#ff4d26; }.history { color:#258af2; }.biology { color:#25aa39; }.english { color:#e5a300; }.physics { color:#b052d1; }
+        @media (max-width:600px) { main { justify-content:flex-start; padding-top:72px; } .brand { margin-bottom:30px; } .brand h1 { font-size:30px; } .auth-card { padding:22px; box-shadow:5px 5px 0 var(--ink); } .orb { width:170px; height:170px; } }
+    </style>
 </head>
 <body>
- 
-<nav class="navbar navbar-expand-md py-3">
-    <div class="container">
-        <a class="navbar-brand" href="{% url 'home' %}">
-            <span class="brand-icon">📚</span>
-            StudyDesk
-        </a>
-    </div>
-</nav>
- 
-<div class="auth-wrap">
-    <div class="login-card">
-        <div class="login-header">
-            <div class="logo-circle">📚</div>
-            <h1>Welcome back</h1>
-            <p>Sign in to keep chatting about your homework</p>
-        </div>
- 
-        {% if error %}
-            <div class="error-box">{{ error }}</div>
-        {% endif %}
- 
-        <form method="post" action="{% url 'login' %}">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="id_username">Username</label>
-                <input type="text" name="username" id="id_username" placeholder="Enter your username" required autofocus>
+    <div class="shape sun"></div><div class="shape dot"></div><div class="shape corner"></div><div class="shape diamond"></div><div class="shape square"></div><div class="shape orb"></div><div class="shape dash"></div>
+    <main>
+        <header class="brand">
+            <div class="brand-line"><div class="brand-icon">≋</div><h1>StudyDesk</h1></div>
+            <p>Your homework, organized.</p>
+        </header>
+        <section class="auth-card" aria-label="StudyDesk account access">
+            <div class="tabs" role="tablist">
+                <button class="tab" type="button" data-panel="login" role="tab">Log In</button>
+                <button class="tab" type="button" data-panel="signup" role="tab">Sign Up</button>
             </div>
-            <div class="form-group">
-                <label for="id_password">Password</label>
-                <input type="password" name="password" id="id_password" placeholder="Enter your password" required>
-            </div>
- 
-            <div class="options-row">
-                <label class="remember-me">
-                    <input type="checkbox" name="remember_me">
-                    Remember me
-                </label>
-                <a href="#">Forgot password?</a>
-            </div>
- 
-            <input type="hidden" name="next" value="{{ next }}">
-            <button type="submit" class="btn-submit">Sign In</button>
-        </form>
- 
-        <div class="signup-link">
-            Don't have an account? <a href="#">Sign up</a>
-        </div>
-    </div>
-</div>
- 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+            {% if error %}<div class="notice error">{{ error }}</div>{% endif %}
+            {% if errors %}<div class="notice error">{% for item in errors %}<div>{{ item }}</div>{% endfor %}</div>{% endif %}
+            {% if success %}<div class="notice success">{{ success }}</div>{% endif %}
+            <form id="login-panel" class="panel" method="post" action="{% url 'login' %}">
+                {% csrf_token %}<input type="hidden" name="next" value="{{ next }}">
+                <div class="field"><label for="login-email">Email or username</label><input id="login-email" name="username" value="{{ login_identifier }}" placeholder="you@school.edu" required autofocus></div>
+                <div class="field"><label for="login-password">Password</label><input id="login-password" type="password" name="password" placeholder="••••••••" required></div>
+                <button class="submit" type="submit">Log In →</button>
+                <p class="forgot"><button type="button" data-panel="reset">Forgot your password?</button></p>
+                <p class="switch">New to StudyDesk? <button type="button" data-panel="signup">Sign up</button></p>
+            </form>
+            <form id="signup-panel" class="panel" method="post" action="{% url 'signup' %}">
+                {% csrf_token %}<input type="hidden" name="next" value="{{ next }}">
+                <div class="field"><label for="signup-username">Username</label><input id="signup-username" name="username" value="{{ signup_username }}" placeholder="Choose a username" required></div>
+                <div class="field"><label for="signup-email">Email</label><input id="signup-email" type="email" name="email" value="{{ signup_email }}" placeholder="you@school.edu" required></div>
+                <div class="field"><label for="signup-password">Password</label><input id="signup-password" type="password" name="password" placeholder="At least 8 characters" required></div>
+                <div class="field"><label for="signup-confirm">Confirm password</label><input id="signup-confirm" type="password" name="password_confirm" placeholder="••••••••" required></div>
+                <button class="submit" type="submit">Create Account →</button>
+                <p class="switch">Already have an account? <button type="button" data-panel="login">Log in</button></p>
+            </form>
+            <form id="reset-panel" class="panel" method="post" action="{% url 'password_reset' %}">
+                {% csrf_token %}
+                <div class="field"><label for="reset-email">Email</label><input id="reset-email" type="email" name="email" placeholder="you@school.edu" required autofocus></div>
+                <button class="submit" type="submit">Send Reset Link →</button>
+                <p class="switch">Remembered it? <button type="button" data-panel="login">Log in</button></p>
+            </form>
+            <form id="new-password-panel" class="panel" method="post" action="{{ reset_confirm_url }}">
+                {% csrf_token %}
+                <div class="field"><label for="new-password">New password</label><input id="new-password" type="password" name="password" placeholder="At least 8 characters" required autofocus></div>
+                <div class="field"><label for="new-password-confirm">Confirm password</label><input id="new-password-confirm" type="password" name="password_confirm" placeholder="••••••••" required></div>
+                <button class="submit" type="submit">Save New Password →</button>
+            </form>
+        </section>
+        <div class="subjects" aria-hidden="true"><span class="subject math">Math</span><span class="subject history">History</span><span class="subject biology">Biology</span><span class="subject english">English</span><span class="subject physics">Physics</span></div>
+    </main>
+    <script>
+        (function () {
+            const initialPanel = '{{ active_panel|default:"login" }}';
+            const showPanel = (name) => {
+                document.querySelectorAll('.panel').forEach(panel => panel.classList.toggle('active', panel.id === name + '-panel'));
+                document.querySelectorAll('.tab').forEach(tab => tab.classList.toggle('active', tab.dataset.panel === name));
+            };
+            document.querySelectorAll('[data-panel]').forEach(control => control.addEventListener('click', () => showPanel(control.dataset.panel)));
+            showPanel(initialPanel);
+        }());
+    </script>
+
+    <script>
+(function () {
+    const loginForm = document.getElementById('login-panel');
+    loginForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const formData = new FormData(loginForm);
+
+        fetch(loginForm.action, {
+            method: 'POST',
+            body: formData,
+        }).then(function (response) {
+            if (response.redirected) {
+                // Successful login: replace this history entry instead of
+                // pushing a new one, so "back" doesn't bounce through /login/
+                window.location.replace(response.url);
+            } else {
+                // Login failed (bad credentials): just do a normal submit
+                // so the error message renders as usual
+                loginForm.submit();
+            }
+        });
+    });
+}());
+</script>
 </body>
 </html>
- 

@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -40,7 +41,8 @@ INSTALLED_APPS = [
     'home',
     'classes',
     'login',
-    'testApp'
+    'testApp',
+    'dashboard',
 ]
 
 MIDDLEWARE = [
@@ -118,3 +120,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Keep Django's protected views and successful sign-ins inside StudyDesk.
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'class_list'
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# Local development gets a usable reset link in the server console; deployments
+# can set DJANGO_EMAIL_BACKEND to their configured SMTP/provider backend.
+EMAIL_BACKEND = os.getenv(
+    'DJANGO_EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend'
+)
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@studydesk.local')
