@@ -9,7 +9,8 @@ urlpatterns = [
     path('', include('login.urls')),
     path('classes/', include('classes.urls')),
     path('home/', include('home.urls')),
-
+    path('dashboard/', include('dashboard.urls')),
+    
     # testApp last because it catches root-level routes
     path('', include('testApp.urls')),
 ]
