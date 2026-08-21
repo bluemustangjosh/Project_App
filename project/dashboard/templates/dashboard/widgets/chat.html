@@ -1,0 +1,565 @@
+<div class="chat-widget" id="chat-widget">
+    <style>
+        .chat-widget {
+            --chat-ink: var(--ink, #241609);
+            --chat-paper: var(--paper-card, #fffaf2);
+            --chat-orange: var(--orange, #ff4f13);
+            --chat-orange-dark: var(--orange-dark, #ed3f08);
+            --chat-line: var(--line, #ddbf97);
+            --chat-muted: var(--text-muted, #774313);
+            --chat-font-display: var(--font-display, Georgia, 'Times New Roman', serif);
+            --chat-font-mono: var(--font-mono, 'Courier New', monospace);
+            --chat-font-body: var(--font-body, Arial, Helvetica, sans-serif);
+            --chat-bubble-other: #ece6d8;
+            --chat-avatar-blue: #4c6fd1;
+
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 420px;
+            font-family: var(--chat-font-body);
+            color: var(--chat-ink);
+        }
+        .chat-widget * { box-sizing: border-box; }
+
+        .chat-widget h2 {
+            margin: 0 0 14px;
+            font-family: var(--chat-font-display);
+            font-weight: 700;
+            color: var(--chat-ink);
+        }
+
+        /* ---- Tabs ---- */
+        .chat-tabs {
+            display: flex;
+            gap: 22px;
+            border-bottom: 1px solid var(--chat-line);
+            margin-bottom: 14px;
+        }
+        .chat-tab {
+            all: unset;
+            cursor: pointer;
+            font-family: var(--chat-font-body);
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--chat-muted);
+            padding-bottom: 9px;
+            border-bottom: 2px solid transparent;
+            transition: color 0.12s ease, border-color 0.12s ease;
+        }
+        .chat-tab:hover { color: var(--chat-ink); }
+        .chat-tab.is-active {
+            color: var(--chat-orange);
+            border-bottom: 2px solid var(--chat-orange);
+        }
+
+        /* ---- Panels ---- */
+        .chat-panel { display: none; flex: 1; min-height: 0; flex-direction: column; }
+        .chat-panel.is-active { display: flex; }
+
+        /* ---- Message list ---- */
+        .chat-log {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            padding-right: 2px;
+            margin-bottom: 14px;
+        }
+        .chat-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            max-width: 88%;
+        }
+        .chat-row.from-me {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+        .chat-avatar {
+            flex-shrink: 0;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--chat-avatar-blue);
+            color: #fff;
+            font-family: var(--chat-font-body);
+            font-size: 10px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .chat-row.from-me .chat-avatar {
+            background: var(--chat-orange);
+        }
+
+        .chat-bubble-wrap {
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-row.from-me .chat-bubble-wrap {
+            align-items: flex-end;
+        }
+
+        .chat-sender {
+            font-family: var(--chat-font-mono);
+            font-size: 11px;
+            color: var(--chat-muted);
+            margin-bottom: 4px;
+        }
+
+        .chat-bubble {
+            background: var(--chat-bubble-other);
+            color: var(--chat-ink);
+            padding: 10px 14px;
+            border-radius: 14px;
+            border-bottom-left-radius: 4px;
+            font-size: 14px;
+            line-height: 1.4;
+            max-width: 100%;
+            word-wrap: break-word;
+        }
+        .chat-row.from-me .chat-bubble {
+            background: var(--chat-orange);
+            color: #fff8ee;
+            border-bottom-left-radius: 14px;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-time {
+            font-family: var(--chat-font-mono);
+            font-size: 10px;
+            color: var(--chat-muted);
+            margin-top: 4px;
+        }
+        .chat-row.from-me .chat-time { text-align: right; }
+
+        .chat-typing {
+            font-family: var(--chat-font-mono);
+            font-size: 11px;
+            color: var(--chat-muted);
+            font-style: italic;
+            min-height: 14px;
+            padding-left: 38px;
+        }
+
+        /* ---- Composer ---- */
+        .chat-composer {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            border-top: 1px dashed var(--chat-line);
+            padding-top: 14px;
+        }
+        .chat-input {
+            flex: 1;
+            font-family: var(--chat-font-body);
+            font-size: 14px;
+            color: var(--chat-ink);
+            background: var(--chat-paper);
+            border: 1.5px solid var(--chat-line);
+            border-radius: 20px;
+            padding: 10px 16px;
+            outline: none;
+            transition: border-color 0.12s ease;
+        }
+        .chat-input:focus { border-color: var(--chat-orange); }
+
+        .chat-send-btn {
+            all: unset;
+            flex-shrink: 0;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--chat-orange);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.12s ease, transform 0.06s ease;
+        }
+        .chat-send-btn:hover { background: var(--chat-orange-dark); }
+        .chat-send-btn:active { transform: scale(0.92); }
+
+        .chat-log::-webkit-scrollbar { width: 6px; }
+        .chat-log::-webkit-scrollbar-thumb { background: var(--chat-line); border-radius: 4px; }
+
+        /* ---- Notes pad ---- */
+        .notes-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+            border-bottom: 1px dashed var(--chat-line);
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        .notes-btn {
+            all: unset;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            border-radius: 7px;
+            border: 1.5px solid var(--chat-line);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--chat-font-body);
+            font-size: 13px;
+            color: var(--chat-ink);
+            background: var(--chat-paper);
+            transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+        }
+        .notes-btn:hover { border-color: var(--chat-orange); color: var(--chat-orange); }
+        .notes-btn.is-active { background: var(--chat-orange); border-color: var(--chat-orange); color: #fff; }
+        .notes-btn.bold { font-weight: 700; }
+        .notes-btn.italic { font-style: italic; }
+        .notes-btn.underline { text-decoration: underline; }
+
+        .notes-sep {
+            width: 1px;
+            height: 22px;
+            background: var(--chat-line);
+            margin: 0 4px;
+        }
+
+        .notes-size-select {
+            font-family: var(--chat-font-body);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--chat-ink);
+            background: var(--chat-paper);
+            border: 1.5px solid var(--chat-line);
+            border-radius: 7px;
+            padding: 6px 8px;
+            cursor: pointer;
+            outline: none;
+        }
+        .notes-size-select:hover { border-color: var(--chat-orange); }
+
+        .notes-clear-btn {
+            all: unset;
+            cursor: pointer;
+            margin-left: auto;
+            font-family: var(--chat-font-mono);
+            font-size: 11px;
+            color: var(--chat-muted);
+            padding: 6px 10px;
+            border: 1px dashed var(--chat-line);
+            border-radius: 7px;
+            transition: color 0.12s ease, border-color 0.12s ease;
+        }
+        .notes-clear-btn:hover { color: #c0392b; border-color: #c0392b; }
+
+        .notes-pad-wrap { flex: 1; min-height: 0; display: flex; }
+        .notes-pad {
+            flex: 1;
+            overflow-y: auto;
+            outline: none;
+            font-family: var(--chat-font-body);
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--chat-ink);
+            background: repeating-linear-gradient(
+                var(--chat-paper),
+                var(--chat-paper) 27px,
+                var(--chat-line) 28px
+            );
+            background-attachment: local;
+            padding: 6px 4px;
+            border-radius: 4px;
+        }
+        .notes-pad:empty::before {
+            content: attr(data-placeholder);
+            color: var(--chat-muted);
+            font-style: italic;
+        }
+        .notes-pad ul { margin: 0 0 0 18px; padding: 0; }
+        .notes-pad::-webkit-scrollbar { width: 6px; }
+        .notes-pad::-webkit-scrollbar-thumb { background: var(--chat-line); border-radius: 4px; }
+
+        .notes-saved-hint {
+            font-family: var(--chat-font-mono);
+            font-size: 10px;
+            color: var(--chat-muted);
+            text-align: right;
+            min-height: 14px;
+            margin-top: 6px;
+        }
+    </style>
+
+    <h2 id="chat-panel-title">&#128172; Class Chat</h2>
+
+    <div class="chat-tabs">
+        <button type="button" class="chat-tab is-active" id="tab-btn-chat" data-panel="chat">Class Chat</button>
+        <button type="button" class="chat-tab" id="tab-btn-notes" data-panel="notes">Notes</button>
+    </div>
+
+    <!-- ---- Class Chat panel ---- -->
+    <div class="chat-panel is-active" id="panel-chat">
+        <div class="chat-log" id="chat-log"></div>
+        <div class="chat-typing" id="chat-typing"></div>
+
+        <div class="chat-composer">
+            <input type="text" class="chat-input" id="chat-input" placeholder="Type a message..." autocomplete="off">
+            <button type="button" class="chat-send-btn" id="chat-send" aria-label="Send message">&#8594;</button>
+        </div>
+    </div>
+
+    <!-- ---- Notes panel ---- -->
+    <div class="chat-panel" id="panel-notes">
+        <div class="notes-toolbar">
+            <button type="button" class="notes-btn bold" id="notes-bold" data-cmd="bold" title="Bold">B</button>
+            <button type="button" class="notes-btn italic" id="notes-italic" data-cmd="italic" title="Italic">I</button>
+            <button type="button" class="notes-btn underline" id="notes-underline" data-cmd="underline" title="Underline">U</button>
+            <div class="notes-sep"></div>
+            <button type="button" class="notes-btn" id="notes-bullets" data-cmd="insertUnorderedList" title="Bullet list">&#8226;&#8226;&#8226;</button>
+            <div class="notes-sep"></div>
+            <select class="notes-size-select" id="notes-size" title="Text size">
+                <option value="2">Small</option>
+                <option value="3" selected>Medium</option>
+                <option value="5">Large</option>
+                <option value="7">Huge</option>
+            </select>
+            <button type="button" class="notes-clear-btn" id="notes-clear" title="Clear all notes">Clear</button>
+        </div>
+        <div class="notes-pad-wrap">
+            <div class="notes-pad" id="notes-pad" contenteditable="true" data-placeholder="Jot down your notes here... 📝"></div>
+        </div>
+        <div class="notes-saved-hint" id="notes-saved-hint">&nbsp;</div>
+    </div>
+</div>
+
+<script>
+(function () {
+    var root = document.getElementById('chat-widget');
+    if (!root || root.dataset.initialized) return;
+    root.dataset.initialized = 'true';
+
+    var logEl = root.querySelector('#chat-log');
+    var typingEl = root.querySelector('#chat-typing');
+    var inputEl = root.querySelector('#chat-input');
+    var sendBtn = root.querySelector('#chat-send');
+    var titleEl = root.querySelector('#chat-panel-title');
+
+    var tabButtons = root.querySelectorAll('.chat-tab');
+    var panels = {
+        chat: root.querySelector('#panel-chat'),
+        notes: root.querySelector('#panel-notes')
+    };
+    var panelTitles = {
+        chat: '&#128172; Class Chat',
+        notes: '&#128221; Notes'
+    };
+
+    function activatePanel(name) {
+        tabButtons.forEach(function (btn) {
+            btn.classList.toggle('is-active', btn.dataset.panel === name);
+        });
+        Object.keys(panels).forEach(function (key) {
+            panels[key].classList.toggle('is-active', key === name);
+        });
+        titleEl.innerHTML = panelTitles[name];
+        if (name === 'chat') scrollToBottom();
+    }
+
+    tabButtons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            activatePanel(btn.dataset.panel);
+        });
+    });
+
+    // Seed conversation, mirrors the class chat mock.
+    var messages = [
+        { sender: 'Ms. Rivera', initials: 'MR', mine: false,
+          text: "Don't forget your Biology report is due Thursday! Reach out if you need help with citations.",
+          time: '9:14 AM' },
+        { sender: 'You', initials: 'ME', mine: true,
+          text: "Thanks! I'll have it in by Wednesday evening.",
+          time: '9:22 AM' },
+        { sender: 'Alex K.', initials: 'AK', mine: false,
+          text: "Anyone else struggling with the Newton's Laws quiz prep? Want to study together?",
+          time: '11:05 AM' },
+        { sender: 'You', initials: 'ME', mine: true,
+          text: "I'm in! Saturday at the library?",
+          time: '11:08 AM' },
+        { sender: 'Alex K.', initials: 'AK', mine: false,
+          text: 'Perfect, 2pm works for me.',
+          time: '11:10 AM' }
+    ];
+
+    // Canned auto-replies so the composer feels alive without a backend.
+    var autoReplies = [
+        { sender: 'Alex K.', initials: 'AK', text: "Sounds good, see you then!" },
+        { sender: 'Ms. Rivera', initials: 'MR', text: "Great question, let's cover that in class." },
+        { sender: 'Alex K.', initials: 'AK', text: "Haha same, this quiz is rough." },
+        { sender: 'Ms. Rivera', initials: 'MR', text: "Noted, thanks for the update!" }
+    ];
+
+    function formatTime(d) {
+        var h = d.getHours();
+        var m = d.getMinutes();
+        var suffix = h >= 12 ? 'PM' : 'AM';
+        h = h % 12;
+        if (h === 0) h = 12;
+        return h + ':' + (m < 10 ? '0' : '') + m + ' ' + suffix;
+    }
+
+    function renderMessage(msg) {
+        var row = document.createElement('div');
+        row.className = 'chat-row' + (msg.mine ? ' from-me' : '');
+
+        var avatar = document.createElement('div');
+        avatar.className = 'chat-avatar';
+        avatar.textContent = msg.initials;
+
+        var wrap = document.createElement('div');
+        wrap.className = 'chat-bubble-wrap';
+
+        if (!msg.mine) {
+            var senderEl = document.createElement('div');
+            senderEl.className = 'chat-sender';
+            senderEl.textContent = msg.sender;
+            wrap.appendChild(senderEl);
+        }
+
+        var bubble = document.createElement('div');
+        bubble.className = 'chat-bubble';
+        bubble.textContent = msg.text;
+        wrap.appendChild(bubble);
+
+        var time = document.createElement('div');
+        time.className = 'chat-time';
+        time.textContent = msg.time;
+        wrap.appendChild(time);
+
+        row.appendChild(avatar);
+        row.appendChild(wrap);
+        logEl.appendChild(row);
+    }
+
+    function renderAll() {
+        logEl.innerHTML = '';
+        messages.forEach(renderMessage);
+        scrollToBottom();
+    }
+
+    function scrollToBottom() {
+        logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function sendMessage() {
+        var text = inputEl.value.trim();
+        if (!text) return;
+
+        var msg = { sender: 'You', initials: 'ME', mine: true, text: text, time: formatTime(new Date()) };
+        messages.push(msg);
+        renderMessage(msg);
+        scrollToBottom();
+        inputEl.value = '';
+        inputEl.focus();
+
+        maybeAutoReply();
+    }
+
+    function maybeAutoReply() {
+        var reply = autoReplies[Math.floor(Math.random() * autoReplies.length)];
+        typingEl.textContent = reply.sender + ' is typing...';
+
+        setTimeout(function () {
+            typingEl.textContent = '';
+            var msg = {
+                sender: reply.sender,
+                initials: reply.initials,
+                mine: false,
+                text: reply.text,
+                time: formatTime(new Date())
+            };
+            messages.push(msg);
+            renderMessage(msg);
+            scrollToBottom();
+        }, 900 + Math.random() * 700);
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+    inputEl.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+
+    renderAll();
+
+    /* ---------------- Notes pad ---------------- */
+    var notesPad = root.querySelector('#notes-pad');
+    var notesSizeSelect = root.querySelector('#notes-size');
+    var notesClearBtn = root.querySelector('#notes-clear');
+    var notesSavedHint = root.querySelector('#notes-saved-hint');
+    var notesCmdButtons = root.querySelectorAll('.notes-btn[data-cmd]');
+    var NOTES_STORAGE_KEY = 'studydesk-notes-content';
+    var saveTimer = null;
+
+    function loadNotes() {
+        try {
+            var saved = window.localStorage.getItem(NOTES_STORAGE_KEY);
+            if (saved) notesPad.innerHTML = saved;
+        } catch (e) { /* localStorage unavailable, notes just won't persist */ }
+    }
+
+    function saveNotes() {
+        try {
+            window.localStorage.setItem(NOTES_STORAGE_KEY, notesPad.innerHTML);
+        } catch (e) { /* ignore */ }
+        notesSavedHint.textContent = 'Saved ' + formatTime(new Date());
+    }
+
+    function scheduleSave() {
+        notesSavedHint.textContent = 'Saving…';
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(saveNotes, 500);
+    }
+
+    function updateToolbarState() {
+        notesCmdButtons.forEach(function (btn) {
+            var cmd = btn.dataset.cmd;
+            var active = false;
+            try { active = document.queryCommandState(cmd); } catch (e) { active = false; }
+            btn.classList.toggle('is-active', active);
+        });
+    }
+
+    notesCmdButtons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            notesPad.focus();
+            document.execCommand(btn.dataset.cmd, false, null);
+            updateToolbarState();
+            scheduleSave();
+        });
+    });
+
+    notesSizeSelect.addEventListener('change', function () {
+        notesPad.focus();
+        document.execCommand('fontSize', false, notesSizeSelect.value);
+        scheduleSave();
+    });
+
+    notesClearBtn.addEventListener('click', function () {
+        if (!notesPad.textContent.trim() || window.confirm('Clear all notes? This can\'t be undone.')) {
+            notesPad.innerHTML = '';
+            notesPad.focus();
+            saveNotes();
+        }
+    });
+
+    notesPad.addEventListener('input', scheduleSave);
+    notesPad.addEventListener('keyup', updateToolbarState);
+    notesPad.addEventListener('mouseup', updateToolbarState);
+
+    loadNotes();
+})();
+</script>

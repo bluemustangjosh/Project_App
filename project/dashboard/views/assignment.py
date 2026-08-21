@@ -39,13 +39,12 @@ def add_assignment(request):
             due_date=due_date,
             priority=priority,
             points=points,
-            created_by=request.user,
             status='pending'
         )
 
-        return redirect('dashboard:home')
+        return redirect('dashboard')
 
-    return redirect('dashboard:home')
+    return redirect('dashboard')
 
 
 def toggle_assignment_complete(request, assignment_id):

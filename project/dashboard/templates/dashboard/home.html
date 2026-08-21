@@ -63,7 +63,7 @@
         grid-template-columns: 300px 1fr 380px;
         gap: 22px;
         padding: 24px;
-        align-items: start;
+        align-items: stretch;
     }
     @media (max-width: 1100px) {
         .dash-grid { grid-template-columns: 1fr; }
@@ -76,7 +76,7 @@
         box-shadow: 5px 5px 0 var(--ink);
         padding: 20px;
     }
-    .card + .card { margin-top: 22px; }
+    .left-col .card + .card { margin-top: 22px; }
 
     .card h2, .card h3 {
         margin: 0 0 14px;
@@ -99,7 +99,7 @@
         font-family: var(--font-display);
         font-size: 14px;
         font-weight: 700;
-        color: var(--text-muted);
+        color: var(--ink);
         letter-spacing: 0.5px;
         margin: 0 0 12px 0;
         text-transform: uppercase;
@@ -221,7 +221,7 @@
         font-family: var(--font-display);
         font-size: 14px;
         font-weight: 700;
-        color: var(--text-muted);
+        color: var(--ink);
         letter-spacing: 0.5px;
         margin: 0 0 12px 0;
         text-transform: uppercase;
@@ -461,10 +461,10 @@
     <div class="topbar-brand">
         <div class="icon">📚</div>
         <h1>StudyDesk</h1>
-            <div class="user-chip">
-                <div class="avatar">{{ request.user.username|slice:":2"|upper }}</div>
-                <span>{{ request.user.username }}</span>
-            </div>
+        <div class="user-chip">
+            <div class="avatar">{{ student.first_name|slice:":1" }}{{ student.last_name|slice:":1" }}</div>
+            <span>{{ student.first_name }} {{ student.last_name }}</span>
+        </div>
     </div>
 
     <!-- Notifications widget slot -->
@@ -481,30 +481,15 @@
 <div class="dash-grid">
 
     <!-- Left column -->
-    <div>
+    <div class="left-col">
         <!-- Calendar widget slot -->
         <div class="card">
             {% include "dashboard/widgets/calendar.html" %}
         </div>
 
-        <!-- Subjects / classes summary slot -->
+        <!-- Classes widget slot -->
         <div class="card">
-            <h3 class="subjects-title">📚 SUBJECTS</h3>
-            <div class="subject-list">
-                {% for subject in subjects %}
-                <div class="subject-item">
-                    <span class="subject-name">{{ subject.name }}</span>
-                    <span class="subject-count">{{ subject.assignment_count }} left</span>
-                </div>
-                {% empty %}
-                <div class="empty-subjects">
-                    <p>No subjects yet. Add your first class!</p>
-                </div>
-                {% endfor %}
-            </div>
-            <button class="btn-add-subject" onclick="openClassModal()">
-                + Add Subject
-            </button>
+            {% include "dashboard/widgets/class_display.html" %}
         </div>
     </div>
 
@@ -575,7 +560,7 @@
                 <label for="assignmentClass">Class *</label>
                 <select id="assignmentClass" name="class_id" required>
                     <option value="">Select a class...</option>
-                    {% for class in classes %}
+                    {% for class in student.classes.all %}
                         <option value="{{ class.id }}">{{ class.name }}</option>
                     {% endfor %}
                 </select>
@@ -614,42 +599,6 @@
     </div>
 </div>
 
-<!-- ============================================ -->
-<!-- ADD CLASS MODAL -->
-<!-- ============================================ -->
-<div id="classModal" class="modal-overlay">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>📚 Add New Class</h3>
-            <button class="modal-close" onclick="closeClassModal()">✕</button>
-        </div>
-        
-        <form method="post" action="{% url 'add_class' %}">
-            {% csrf_token %}
-            
-            <div class="form-group">
-                <label for="className">Class Name *</label>
-                <input type="text" id="className" name="name" placeholder="e.g., Biology 101" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="classCode">Class Code *</label>
-                <input type="text" id="classCode" name="code" placeholder="e.g., BIO101" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="classSection">Section</label>
-                <input type="text" id="classSection" name="section" placeholder="e.g., A">
-            </div>
-            
-            <div class="modal-actions">
-                <button type="button" class="btn-cancel" onclick="closeClassModal()">Cancel</button>
-                <button type="submit" class="btn-submit">➕ Add Class</button>
-            </div>
-        </form>
-    </div>
-</div>
-
 <script>
     // Open Assignment Modal
     function openAssignmentModal() {
@@ -663,27 +612,11 @@
         document.body.style.overflow = 'auto';
     }
     
-    // Open Class Modal
-    function openClassModal() {
-        document.getElementById('classModal').style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-    }
-    
-    // Close Class Modal
-    function closeClassModal() {
-        document.getElementById('classModal').style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }
-    
-    // Close modals when clicking outside
+    // Close modal when clicking outside
     document.addEventListener('click', function(event) {
         const assignmentModal = document.getElementById('assignmentModal');
-        const classModal = document.getElementById('classModal');
         if (event.target === assignmentModal) {
             closeAssignmentModal();
-        }
-        if (event.target === classModal) {
-            closeClassModal();
         }
     });
 </script>
