@@ -63,7 +63,7 @@
         grid-template-columns: 300px 1fr 380px;
         gap: 22px;
         padding: 24px;
-        align-items: start;
+        align-items: stretch;
     }
     @media (max-width: 1100px) {
         .dash-grid { grid-template-columns: 1fr; }
@@ -76,7 +76,11 @@
         box-shadow: 5px 5px 0 var(--ink);
         padding: 20px;
     }
-    .card + .card { margin-top: 22px; }
+    /* Only stack cards that live inside the left-column group -
+       this used to also match top-level grid siblings (the
+       assignments card + chat card), which pushed the chat card
+       down out of alignment with the calendar/assignments tops. */
+    .left-col .card + .card { margin-top: 22px; }
 
     .card h2, .card h3 {
         margin: 0 0 14px;
@@ -99,7 +103,7 @@
         font-family: var(--font-display);
         font-size: 14px;
         font-weight: 700;
-        color: var(--text-muted);
+        color: var(--ink);
         letter-spacing: 0.5px;
         margin: 0 0 12px 0;
         text-transform: uppercase;
@@ -221,7 +225,7 @@
         font-family: var(--font-display);
         font-size: 14px;
         font-weight: 700;
-        color: var(--text-muted);
+        color: var(--ink);
         letter-spacing: 0.5px;
         margin: 0 0 12px 0;
         text-transform: uppercase;
@@ -481,7 +485,7 @@
 <div class="dash-grid">
 
     <!-- Left column -->
-    <div>
+    <div class="left-col">
         <!-- Calendar widget slot -->
         <div class="card">
             {% include "dashboard/widgets/calendar.html" %}

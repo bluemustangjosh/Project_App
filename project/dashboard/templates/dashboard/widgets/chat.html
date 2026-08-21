@@ -26,25 +26,36 @@
             margin: 0 0 14px;
             font-family: var(--chat-font-display);
             font-weight: 700;
+            color: var(--chat-ink);
         }
 
         /* ---- Tabs ---- */
         .chat-tabs {
             display: flex;
-            gap: 18px;
+            gap: 22px;
             border-bottom: 1px solid var(--chat-line);
             margin-bottom: 14px;
         }
         .chat-tab {
             all: unset;
-            cursor: default;
+            cursor: pointer;
             font-family: var(--chat-font-body);
             font-size: 13px;
             font-weight: 700;
-            color: var(--chat-orange);
+            color: var(--chat-muted);
             padding-bottom: 9px;
+            border-bottom: 2px solid transparent;
+            transition: color 0.12s ease, border-color 0.12s ease;
+        }
+        .chat-tab:hover { color: var(--chat-ink); }
+        .chat-tab.is-active {
+            color: var(--chat-orange);
             border-bottom: 2px solid var(--chat-orange);
         }
+
+        /* ---- Panels ---- */
+        .chat-panel { display: none; flex: 1; min-height: 0; flex-direction: column; }
+        .chat-panel.is-active { display: flex; }
 
         /* ---- Message list ---- */
         .chat-log {
@@ -176,20 +187,150 @@
 
         .chat-log::-webkit-scrollbar { width: 6px; }
         .chat-log::-webkit-scrollbar-thumb { background: var(--chat-line); border-radius: 4px; }
+
+        /* ---- Notes pad ---- */
+        .notes-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+            border-bottom: 1px dashed var(--chat-line);
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        .notes-btn {
+            all: unset;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            border-radius: 7px;
+            border: 1.5px solid var(--chat-line);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--chat-font-body);
+            font-size: 13px;
+            color: var(--chat-ink);
+            background: var(--chat-paper);
+            transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+        }
+        .notes-btn:hover { border-color: var(--chat-orange); color: var(--chat-orange); }
+        .notes-btn.is-active { background: var(--chat-orange); border-color: var(--chat-orange); color: #fff; }
+        .notes-btn.bold { font-weight: 700; }
+        .notes-btn.italic { font-style: italic; }
+        .notes-btn.underline { text-decoration: underline; }
+
+        .notes-sep {
+            width: 1px;
+            height: 22px;
+            background: var(--chat-line);
+            margin: 0 4px;
+        }
+
+        .notes-size-select {
+            font-family: var(--chat-font-body);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--chat-ink);
+            background: var(--chat-paper);
+            border: 1.5px solid var(--chat-line);
+            border-radius: 7px;
+            padding: 6px 8px;
+            cursor: pointer;
+            outline: none;
+        }
+        .notes-size-select:hover { border-color: var(--chat-orange); }
+
+        .notes-clear-btn {
+            all: unset;
+            cursor: pointer;
+            margin-left: auto;
+            font-family: var(--chat-font-mono);
+            font-size: 11px;
+            color: var(--chat-muted);
+            padding: 6px 10px;
+            border: 1px dashed var(--chat-line);
+            border-radius: 7px;
+            transition: color 0.12s ease, border-color 0.12s ease;
+        }
+        .notes-clear-btn:hover { color: #c0392b; border-color: #c0392b; }
+
+        .notes-pad-wrap { flex: 1; min-height: 0; display: flex; }
+        .notes-pad {
+            flex: 1;
+            overflow-y: auto;
+            outline: none;
+            font-family: var(--chat-font-body);
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--chat-ink);
+            background: repeating-linear-gradient(
+                var(--chat-paper),
+                var(--chat-paper) 27px,
+                var(--chat-line) 28px
+            );
+            background-attachment: local;
+            padding: 6px 4px;
+            border-radius: 4px;
+        }
+        .notes-pad:empty::before {
+            content: attr(data-placeholder);
+            color: var(--chat-muted);
+            font-style: italic;
+        }
+        .notes-pad ul { margin: 0 0 0 18px; padding: 0; }
+        .notes-pad::-webkit-scrollbar { width: 6px; }
+        .notes-pad::-webkit-scrollbar-thumb { background: var(--chat-line); border-radius: 4px; }
+
+        .notes-saved-hint {
+            font-family: var(--chat-font-mono);
+            font-size: 10px;
+            color: var(--chat-muted);
+            text-align: right;
+            min-height: 14px;
+            margin-top: 6px;
+        }
     </style>
 
-    <h2>Class Chat</h2>
+    <h2 id="chat-panel-title">&#128172; Class Chat</h2>
 
     <div class="chat-tabs">
-        <span class="chat-tab">Class Chat</span>
+        <button type="button" class="chat-tab is-active" id="tab-btn-chat" data-panel="chat">Class Chat</button>
+        <button type="button" class="chat-tab" id="tab-btn-notes" data-panel="notes">Notes</button>
     </div>
 
-    <div class="chat-log" id="chat-log"></div>
-    <div class="chat-typing" id="chat-typing"></div>
+    <!-- ---- Class Chat panel ---- -->
+    <div class="chat-panel is-active" id="panel-chat">
+        <div class="chat-log" id="chat-log"></div>
+        <div class="chat-typing" id="chat-typing"></div>
 
-    <div class="chat-composer">
-        <input type="text" class="chat-input" id="chat-input" placeholder="Type a message..." autocomplete="off">
-        <button type="button" class="chat-send-btn" id="chat-send" aria-label="Send message">&#8594;</button>
+        <div class="chat-composer">
+            <input type="text" class="chat-input" id="chat-input" placeholder="Type a message..." autocomplete="off">
+            <button type="button" class="chat-send-btn" id="chat-send" aria-label="Send message">&#8594;</button>
+        </div>
+    </div>
+
+    <!-- ---- Notes panel ---- -->
+    <div class="chat-panel" id="panel-notes">
+        <div class="notes-toolbar">
+            <button type="button" class="notes-btn bold" id="notes-bold" data-cmd="bold" title="Bold">B</button>
+            <button type="button" class="notes-btn italic" id="notes-italic" data-cmd="italic" title="Italic">I</button>
+            <button type="button" class="notes-btn underline" id="notes-underline" data-cmd="underline" title="Underline">U</button>
+            <div class="notes-sep"></div>
+            <button type="button" class="notes-btn" id="notes-bullets" data-cmd="insertUnorderedList" title="Bullet list">&#8226;&#8226;&#8226;</button>
+            <div class="notes-sep"></div>
+            <select class="notes-size-select" id="notes-size" title="Text size">
+                <option value="2">Small</option>
+                <option value="3" selected>Medium</option>
+                <option value="5">Large</option>
+                <option value="7">Huge</option>
+            </select>
+            <button type="button" class="notes-clear-btn" id="notes-clear" title="Clear all notes">Clear</button>
+        </div>
+        <div class="notes-pad-wrap">
+            <div class="notes-pad" id="notes-pad" contenteditable="true" data-placeholder="Jot down your notes here... 📝"></div>
+        </div>
+        <div class="notes-saved-hint" id="notes-saved-hint">&nbsp;</div>
     </div>
 </div>
 
@@ -203,6 +344,34 @@
     var typingEl = root.querySelector('#chat-typing');
     var inputEl = root.querySelector('#chat-input');
     var sendBtn = root.querySelector('#chat-send');
+    var titleEl = root.querySelector('#chat-panel-title');
+
+    var tabButtons = root.querySelectorAll('.chat-tab');
+    var panels = {
+        chat: root.querySelector('#panel-chat'),
+        notes: root.querySelector('#panel-notes')
+    };
+    var panelTitles = {
+        chat: '&#128172; Class Chat',
+        notes: '&#128221; Notes'
+    };
+
+    function activatePanel(name) {
+        tabButtons.forEach(function (btn) {
+            btn.classList.toggle('is-active', btn.dataset.panel === name);
+        });
+        Object.keys(panels).forEach(function (key) {
+            panels[key].classList.toggle('is-active', key === name);
+        });
+        titleEl.innerHTML = panelTitles[name];
+        if (name === 'chat') scrollToBottom();
+    }
+
+    tabButtons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            activatePanel(btn.dataset.panel);
+        });
+    });
 
     // Seed conversation, mirrors the class chat mock.
     var messages = [
@@ -325,5 +494,72 @@
     });
 
     renderAll();
+
+    /* ---------------- Notes pad ---------------- */
+    var notesPad = root.querySelector('#notes-pad');
+    var notesSizeSelect = root.querySelector('#notes-size');
+    var notesClearBtn = root.querySelector('#notes-clear');
+    var notesSavedHint = root.querySelector('#notes-saved-hint');
+    var notesCmdButtons = root.querySelectorAll('.notes-btn[data-cmd]');
+    var NOTES_STORAGE_KEY = 'studydesk-notes-content';
+    var saveTimer = null;
+
+    function loadNotes() {
+        try {
+            var saved = window.localStorage.getItem(NOTES_STORAGE_KEY);
+            if (saved) notesPad.innerHTML = saved;
+        } catch (e) { /* localStorage unavailable, notes just won't persist */ }
+    }
+
+    function saveNotes() {
+        try {
+            window.localStorage.setItem(NOTES_STORAGE_KEY, notesPad.innerHTML);
+        } catch (e) { /* ignore */ }
+        notesSavedHint.textContent = 'Saved ' + formatTime(new Date());
+    }
+
+    function scheduleSave() {
+        notesSavedHint.textContent = 'Saving…';
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(saveNotes, 500);
+    }
+
+    function updateToolbarState() {
+        notesCmdButtons.forEach(function (btn) {
+            var cmd = btn.dataset.cmd;
+            var active = false;
+            try { active = document.queryCommandState(cmd); } catch (e) { active = false; }
+            btn.classList.toggle('is-active', active);
+        });
+    }
+
+    notesCmdButtons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            notesPad.focus();
+            document.execCommand(btn.dataset.cmd, false, null);
+            updateToolbarState();
+            scheduleSave();
+        });
+    });
+
+    notesSizeSelect.addEventListener('change', function () {
+        notesPad.focus();
+        document.execCommand('fontSize', false, notesSizeSelect.value);
+        scheduleSave();
+    });
+
+    notesClearBtn.addEventListener('click', function () {
+        if (!notesPad.textContent.trim() || window.confirm('Clear all notes? This can\'t be undone.')) {
+            notesPad.innerHTML = '';
+            notesPad.focus();
+            saveNotes();
+        }
+    });
+
+    notesPad.addEventListener('input', scheduleSave);
+    notesPad.addEventListener('keyup', updateToolbarState);
+    notesPad.addEventListener('mouseup', updateToolbarState);
+
+    loadNotes();
 })();
 </script>
