@@ -1,15 +1,22 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
 from testApp.models import Student
+
 
 def landing(request):
     return render(request, 'home/home.html')
 
-@login_required(login_url='login')
+
 def home(request):
-    student = Student.objects.filter(username=request.user.username).first()
+    student_id = request.session.get('student_id')
 
-    if student is None or student.classes.count() == 0:
-        return redirect('add_class')
+    if not student_id:
+        return redirect('login')
 
-    return render(request, 'home/home.html')
+    student = Student.objects.get(id=student_id)
+
+    if student.classes.count() == 0:
+        return redirect('class_list')
+
+    return render(request, 'home/home.html', {
+        'student': student,
+    })
