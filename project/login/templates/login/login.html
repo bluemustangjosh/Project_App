@@ -69,15 +69,47 @@
                 <p class="switch">New to StudyDesk? <button type="button" data-panel="signup">Sign up</button></p>
             </form>
             <form id="signup-panel" class="panel" method="post" action="{% url 'signup' %}">
-                {% csrf_token %}<input type="hidden" name="next" value="{{ next }}">
-                <div class="field"><label for="signup-username">Username</label><input id="signup-username" name="username" value="{{ signup_username }}" placeholder="Choose a username" required></div>
-                <div class="field"><label for="signup-email">Email</label><input id="signup-email" type="email" name="email" value="{{ signup_email }}" placeholder="you@school.edu" required></div>
-                <div class="field"><label for="signup-password">Password</label><input id="signup-password" type="password" name="password" placeholder="At least 8 characters" required></div>
-                <div class="field"><label for="signup-confirm">Confirm password</label><input id="signup-confirm" type="password" name="password_confirm" placeholder="••••••••" required></div>
-                <button class="submit" type="submit">Create Account →</button>
-                <p class="switch">Already have an account? <button type="button" data-panel="login">Log in</button></p>
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
+
+            <div class="field">
+                <label for="signup-first">First Name</label>
+                <input id="signup-first" name="first_name" required>
+            </div>
+
+            <div class="field">
+                <label for="signup-last">Last Name</label>
+                <input id="signup-last" name="last_name" required>
+            </div>
+
+            <div class="field">
+                <label for="signup-id">Student ID</label>
+                <input id="signup-id" name="student_id" required>
+            </div>
+
+            <div class="field">
+                <label for="signup-username">Username</label>
+                <input id="signup-username" name="username" required>
+            </div>
+
+            <div class="field">
+                <label for="signup-email">Email</label>
+                <input id="signup-email" type="email" name="email" required>
+            </div>
+
+            <div class="field">
+                <label for="signup-password">Password</label>
+                <input id="signup-password" type="password" name="password" required>
+            </div>
+
+            <div class="field">
+                <label for="signup-confirm">Confirm password</label>
+                <input id="signup-confirm" type="password" name="password_confirm" required>
+            </div>
+
+            <button class="submit" type="submit">Create Account →</button>
             </form>
-            <form id="reset-panel" class="panel" method="post" action="{% url 'password_reset' %}">
+            <form id="reset-panel" class="panel" method="post" action="{% url 'password_reset_request' %}">
                 {% csrf_token %}
                 <div class="field"><label for="reset-email">Email</label><input id="reset-email" type="email" name="email" placeholder="you@school.edu" required autofocus></div>
                 <button class="submit" type="submit">Send Reset Link →</button>

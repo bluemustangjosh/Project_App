@@ -8,6 +8,7 @@ from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
 from django.views.decorators.cache import never_cache
+from testApp.models import Student
 
 
 def _render_auth(request, *, active_panel='login', **context):
@@ -21,31 +22,32 @@ def _render_auth(request, *, active_panel='login', **context):
 
 @never_cache
 def login_view(request):
-    if request.user.is_authenticated:
+    # If already logged in using Student session
+    if request.session.get('student_id'):
         return redirect('class_list')
 
     if request.method == 'POST':
         identifier = request.POST.get('username', '').strip()
         password = request.POST.get('password', '')
-        user = authenticate(request, username=identifier, password=password)
 
-        # The visual design asks for an email address. Existing username-based
-        # accounts still work, while email-based sign-in is accepted as well.
-        if user is None and '@' in identifier:
-            matching_user = User.objects.filter(email__iexact=identifier).first()
-            if matching_user:
-                user = authenticate(request, username=matching_user.username, password=password)
+        # Allow login by username OR email
+        student = Student.objects.filter(username__iexact=identifier, password=password).first()
+        if student is None:
+            student = Student.objects.filter(email__iexact=identifier, password=password).first()
 
-        if user is not None:
-            login(request, user)
+        if student:
+            request.session['student_id'] = student.id
             return redirect(request.POST.get('next') or 'class_list')
+
         return _render_auth(
             request,
+            active_panel='login',
             error="Your email/username and password didn't match. Please try again.",
             login_identifier=identifier,
         )
 
-    return _render_auth(request)
+    return _render_auth(request, active_panel='login')
+
 
 
 @never_cache
@@ -87,23 +89,71 @@ def signup_view(request):
     return redirect(request.POST.get('next') or 'class_list')
 
 
-def password_reset_view(request):
-    if request.method != 'POST':
-        return _render_auth(request, active_panel='reset')
+def signup_view(request):
+    # If already logged in using Student session
+    if request.session.get('student_id'):
+        return redirect('class_list')
 
-    form = PasswordResetForm(request.POST)
-    if form.is_valid():
-        # This uses Django's configured email backend and reset-token flow.
-        form.save(
-            request=request,
-            use_https=request.is_secure(),
-            from_email=None,
-            email_template_name='registration/password_reset_email.html',
-            subject_template_name='registration/password_reset_subject.txt',
+    # If GET request, show signup panel
+    if request.method != 'POST':
+        return _render_auth(request, active_panel='signup')
+
+    # Collect form fields
+    first_name = request.POST.get('first_name', '').strip()
+    last_name = request.POST.get('last_name', '').strip()
+    student_id = request.POST.get('student_id', '').strip()
+    username = request.POST.get('username', '').strip()
+    email = request.POST.get('email', '').strip()
+    password = request.POST.get('password', '')
+    confirm_password = request.POST.get('password_confirm', '')
+
+    errors = []
+
+    # Validate required fields
+    if not first_name:
+        errors.append("Please enter your first name.")
+    if not last_name:
+        errors.append("Please enter your last name.")
+    if not student_id:
+        errors.append("Please enter your student ID.")
+
+    if not username:
+        errors.append("Please choose a username.")
+    elif Student.objects.filter(username__iexact=username).exists():
+        errors.append("That username is already in use.")
+
+    if not email:
+        errors.append("Please enter your email address.")
+    elif Student.objects.filter(email__iexact=email).exists():
+        errors.append("An account already uses that email address.")
+
+    if password != confirm_password:
+        errors.append("The two passwords do not match.")
+
+    # If errors, re-render signup page
+    if errors:
+        return _render_auth(
+            request,
+            active_panel='signup',
+            errors=errors,
+            signup_username=username,
+            signup_email=email
         )
-        return _render_auth(request, active_panel='reset',
-                            success='If an account exists for that email, we sent a password-reset link.')
-    return _render_auth(request, active_panel='reset', errors=['Enter a valid email address.'])
+
+    # Create Student (NOT Django User)
+    student = Student.objects.create(
+        first_name=first_name,
+        last_name=last_name,
+        email=email,
+        student_id=student_id,
+        username=username,
+        password=password
+    )
+
+    # Custom login using session
+    request.session['student_id'] = student.id
+
+    return redirect(request.POST.get('next') or 'class_list')
 
 
 def password_reset_confirm_view(request, uidb64, token):
@@ -137,3 +187,16 @@ def password_reset_confirm_view(request, uidb64, token):
                             reset_confirm_url=request.path)
 
     return _render_auth(request, active_panel='new-password', reset_confirm_url=request.path)
+
+# login/views.py
+@never_cache
+def password_reset_request_view(request):
+    """First step of password reset — just needs a URL to exist so the form doesn't 404/crash."""
+    if request.method == 'POST':
+        # Not actually emailing anything — just acknowledge and send them back to login.
+        return _render_auth(
+            request, active_panel='login',
+            success='If that email is registered, a reset link would be sent (demo only).'
+        )
+
+    return _render_auth(request, active_panel='reset')

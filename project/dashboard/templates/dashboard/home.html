@@ -93,6 +93,366 @@
     }
 
     .chat-card { min-height: 400px; display: flex; flex-direction: column; }
+
+    /* ---------- Assignment Widget Styles ---------- */
+    .section-title {
+        font-family: var(--font-display);
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-muted);
+        letter-spacing: 0.5px;
+        margin: 0 0 12px 0;
+        text-transform: uppercase;
+        border-bottom: 2px solid var(--line);
+        padding-bottom: 8px;
+    }
+
+    .assignment-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(221, 191, 151, 0.3);
+        transition: background 0.2s;
+    }
+
+    .assignment-row:last-child {
+        border-bottom: none;
+    }
+
+    .assignment-row:hover {
+        background: rgba(255, 248, 238, 0.5);
+        padding-left: 8px;
+        padding-right: 8px;
+        border-radius: 6px;
+    }
+
+    .assignment-row.due-today {
+        background: rgba(255, 79, 19, 0.05);
+        border-left: 3px solid var(--orange);
+        padding-left: 8px;
+        border-radius: 4px;
+    }
+
+    .assignment-name {
+        font-size: 15px;
+        font-weight: 500;
+        color: var(--ink);
+        font-family: var(--font-display);
+    }
+
+    .assignment-meta {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
+    }
+
+    .due-badge {
+        background: var(--orange);
+        color: white;
+        padding: 2px 12px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        font-family: var(--font-body);
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    .due-badge.overdue {
+        background: #c0392b;
+    }
+
+    .days-left {
+        color: var(--text-muted);
+        font-size: 13px;
+        font-family: var(--font-mono);
+    }
+
+    .empty-upcoming {
+        text-align: center;
+        padding: 20px 10px;
+        color: var(--text-muted);
+        font-family: var(--font-display);
+        font-style: italic;
+    }
+
+    .empty-upcoming p {
+        margin: 0;
+        font-size: 14px;
+    }
+
+    .btn-add-assignment {
+        background: var(--paper-card);
+        color: var(--ink);
+        border: 2px solid var(--ink);
+        border-radius: 7px;
+        padding: 10px 20px;
+        font-family: var(--font-body);
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: 3px 3px 0 var(--ink);
+        margin-top: 12px;
+    }
+
+    .btn-add-assignment:hover {
+        background: var(--orange);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 5px 5px 0 var(--ink);
+    }
+
+    .plus-icon {
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    /* Subject Styles */
+    .subjects-title {
+        font-family: var(--font-display);
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-muted);
+        letter-spacing: 0.5px;
+        margin: 0 0 12px 0;
+        text-transform: uppercase;
+        border-bottom: 2px solid var(--line);
+        padding-bottom: 8px;
+    }
+
+    .subject-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(221, 191, 151, 0.3);
+        font-family: var(--font-body);
+        font-size: 14px;
+    }
+
+    .subject-item:last-child {
+        border-bottom: none;
+    }
+
+    .subject-name {
+        color: var(--ink);
+        font-weight: 500;
+    }
+
+    .subject-count {
+        color: var(--text-muted);
+        font-size: 13px;
+        font-family: var(--font-mono);
+    }
+
+    .empty-subjects {
+        text-align: center;
+        padding: 20px 10px;
+        color: var(--text-muted);
+        font-family: var(--font-display);
+        font-style: italic;
+        font-size: 14px;
+    }
+
+    .btn-add-subject {
+        background: var(--paper-card);
+        color: var(--ink);
+        border: 2px solid var(--ink);
+        border-radius: 7px;
+        padding: 8px 16px;
+        font-family: var(--font-body);
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s;
+        width: 100%;
+        margin-top: 8px;
+        box-shadow: 3px 3px 0 var(--ink);
+    }
+
+    .btn-add-subject:hover {
+        background: var(--orange);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 5px 5px 0 var(--ink);
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-content {
+        background: var(--paper-card);
+        border: 3px solid var(--ink);
+        border-radius: 13px;
+        box-shadow: 8px 8px 0 var(--ink);
+        padding: 28px;
+        max-width: 500px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid var(--line);
+    }
+
+    .modal-header h3 {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: 20px;
+        color: var(--ink);
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: var(--text-muted);
+        padding: 0 6px;
+        font-family: var(--font-body);
+    }
+
+    .modal-close:hover {
+        color: var(--ink);
+    }
+
+    .form-group {
+        margin-bottom: 16px;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        font-size: 13px;
+        margin-bottom: 4px;
+        color: var(--ink);
+        font-family: var(--font-body);
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border: 2px solid var(--line);
+        border-radius: 7px;
+        font-size: 14px;
+        font-family: var(--font-body);
+        background: white;
+        transition: border-color 0.2s;
+        color: var(--ink);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: var(--orange);
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    .form-row .form-group.half {
+        margin-bottom: 0;
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        margin-top: 20px;
+        padding-top: 16px;
+        border-top: 2px solid var(--line);
+    }
+
+    .modal-actions button {
+        padding: 10px 20px;
+        border-radius: 7px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: var(--font-body);
+    }
+
+    .btn-cancel {
+        background: none;
+        border: 2px solid var(--line);
+        color: var(--text-muted);
+    }
+
+    .btn-cancel:hover {
+        background: #f0e8dd;
+    }
+
+    .btn-submit {
+        background: var(--orange);
+        border: 2px solid var(--ink);
+        color: white;
+        box-shadow: 3px 3px 0 var(--ink);
+    }
+
+    .btn-submit:hover {
+        background: var(--orange-dark);
+        transform: translateY(-1px);
+    }
+
+    @media (max-width: 600px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+        
+        .assignment-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+        }
+        
+        .assignment-meta {
+            width: 100%;
+            justify-content: flex-start;
+        }
+        
+        .modal-content {
+            padding: 20px;
+        }
+    }
 </style>
 </head>
 <body>
@@ -129,27 +489,204 @@
 
         <!-- Subjects / classes summary slot -->
         <div class="card">
-            <h3>Subjects</h3>
-            <div class="placeholder-note">Subjects widget goes here.</div>
+            <h3 class="subjects-title">📚 SUBJECTS</h3>
+            <div class="subject-list">
+                {% for subject in subjects %}
+                <div class="subject-item">
+                    <span class="subject-name">{{ subject.name }}</span>
+                    <span class="subject-count">{{ subject.assignment_count }} left</span>
+                </div>
+                {% empty %}
+                <div class="empty-subjects">
+                    <p>No subjects yet. Add your first class!</p>
+                </div>
+                {% endfor %}
+            </div>
+            <button class="btn-add-subject" onclick="openClassModal()">
+                + Add Subject
+            </button>
         </div>
     </div>
 
-    <!-- Center column -->
-    <div>
-        <!-- Assignments widget slot -->
-        <div class="card">
-            <h2>Assignments</h2>
-            <div class="placeholder-note">Assignments widget goes here.</div>
+    <!-- Center column - Assignments -->
+    <div class="card">
+        <div class="assignments-widget">
+            <!-- UPCOMING SECTION -->
+            <div class="upcoming-section">
+                <h2 class="section-title">📅 UPCOMING</h2>
+                {% if upcoming_assignments %}
+                    {% for assignment in upcoming_assignments %}
+                    <div class="assignment-row {% if assignment.is_due_today %}due-today{% endif %}">
+                        <div class="assignment-name">{{ assignment.title }}</div>
+                        <div class="assignment-meta">
+                            {% if assignment.is_due_today %}
+                                <span class="due-badge">Due today!</span>
+                            {% elif assignment.is_overdue %}
+                                <span class="due-badge overdue">Overdue!</span>
+                            {% else %}
+                                <span class="days-left">{{ assignment.days_left }}d left</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-upcoming">
+                        <p>No upcoming assignments! 🎉</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- QUICK ADD BUTTON -->
+            <div class="quick-add-section">
+                <button class="btn-add-assignment" onclick="openAssignmentModal()">
+                    <span class="plus-icon">+</span> Add Assignment
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- Right column -->
+    <!-- Right column - Chat -->
     <div class="card chat-card">
         <!-- Chat widget slot -->
         {% include "dashboard/widgets/chat.html" %}
     </div>
 
 </div>
+
+<!-- ============================================ -->
+<!-- ADD ASSIGNMENT MODAL -->
+<!-- ============================================ -->
+<div id="assignmentModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>📝 Add New Assignment</h3>
+            <button class="modal-close" onclick="closeAssignmentModal()">✕</button>
+        </div>
+        
+        <form method="post" action="{% url 'add_assignment' %}">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="assignmentTitle">Assignment Title *</label>
+                <input type="text" id="assignmentTitle" name="title" placeholder="e.g., Chapter 7 Problem Set" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="assignmentClass">Class *</label>
+                <select id="assignmentClass" name="class_id" required>
+                    <option value="">Select a class...</option>
+                    {% for class in classes %}
+                        <option value="{{ class.id }}">{{ class.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="assignmentDescription">Description</label>
+                <textarea id="assignmentDescription" name="description" rows="3" placeholder="Add details about this assignment..."></textarea>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group half">
+                    <label for="assignmentDueDate">Due Date *</label>
+                    <input type="date" id="assignmentDueDate" name="due_date" required>
+                </div>
+                <div class="form-group half">
+                    <label for="assignmentPriority">Priority</label>
+                    <select id="assignmentPriority" name="priority">
+                        <option value="high">🔴 High</option>
+                        <option value="medium" selected>🟡 Medium</option>
+                        <option value="low">🟢 Low</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="assignmentPoints">Points</label>
+                <input type="number" id="assignmentPoints" name="points" value="100" min="0" max="1000">
+            </div>
+            
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeAssignmentModal()">Cancel</button>
+                <button type="submit" class="btn-submit">➕ Add Assignment</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ============================================ -->
+<!-- ADD CLASS MODAL -->
+<!-- ============================================ -->
+<div id="classModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>📚 Add New Class</h3>
+            <button class="modal-close" onclick="closeClassModal()">✕</button>
+        </div>
+        
+        <form method="post" action="{% url 'add_class' %}">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="className">Class Name *</label>
+                <input type="text" id="className" name="name" placeholder="e.g., Biology 101" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="classCode">Class Code *</label>
+                <input type="text" id="classCode" name="code" placeholder="e.g., BIO101" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="classSection">Section</label>
+                <input type="text" id="classSection" name="section" placeholder="e.g., A">
+            </div>
+            
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeClassModal()">Cancel</button>
+                <button type="submit" class="btn-submit">➕ Add Class</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Open Assignment Modal
+    function openAssignmentModal() {
+        document.getElementById('assignmentModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    
+    // Close Assignment Modal
+    function closeAssignmentModal() {
+        document.getElementById('assignmentModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+    
+    // Open Class Modal
+    function openClassModal() {
+        document.getElementById('classModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    
+    // Close Class Modal
+    function closeClassModal() {
+        document.getElementById('classModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+    
+    // Close modals when clicking outside
+    document.addEventListener('click', function(event) {
+        const assignmentModal = document.getElementById('assignmentModal');
+        const classModal = document.getElementById('classModal');
+        if (event.target === assignmentModal) {
+            closeAssignmentModal();
+        }
+        if (event.target === classModal) {
+            closeClassModal();
+        }
+    });
+</script>
 
 </body>
 </html>

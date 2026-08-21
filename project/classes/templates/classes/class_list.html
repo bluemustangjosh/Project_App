@@ -110,7 +110,7 @@
             <h2>Add a class</h2>
             <p class="sub">Enter the class name, code, and section.</p>
 
-            <form method="POST" action="{% url 'class_list' %}" id="addClassForm">
+            <form method="POST" action="{% url 'add_class' %}" id="addClassForm">
                 {% csrf_token %}
 
                 <div class="field">
