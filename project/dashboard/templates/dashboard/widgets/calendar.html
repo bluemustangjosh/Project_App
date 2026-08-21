@@ -1,0 +1,286 @@
+<div class="cal-widget" id="cal-widget" data-year="2026" data-month="8">
+    <style>
+        .cal-widget {
+            --cal-ink: var(--ink, #241609);
+            --cal-paper: var(--paper-card, #fffaf2);
+            --cal-orange: var(--orange, #ff4f13);
+            --cal-orange-dark: var(--orange-dark, #ed3f08);
+            --cal-line: var(--line, #ddbf97);
+            --cal-muted: var(--text-muted, #774313);
+            --cal-font-display: var(--font-display, Georgia, 'Times New Roman', serif);
+            --cal-font-mono: var(--font-mono, 'Courier New', monospace);
+            font-family: var(--cal-font-mono);
+            color: var(--cal-ink);
+            max-width: 260px;
+            margin: 0 auto;
+        }
+        .cal-widget * { box-sizing: border-box; }
+
+        .cal-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+        .cal-nav-btn {
+            width: 26px;
+            height: 26px;
+            border: 1.5px solid var(--cal-ink);
+            border-radius: 6px;
+            background: var(--cal-paper);
+            color: var(--cal-ink);
+            font-family: var(--cal-font-mono);
+            font-size: 13px;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.12s ease, transform 0.08s ease;
+        }
+        .cal-nav-btn:hover { background: var(--cal-orange); color: #fff; border-color: var(--cal-orange); }
+        .cal-nav-btn:active { transform: scale(0.92); }
+
+        .cal-title {
+            font-family: var(--cal-font-display);
+            font-weight: 700;
+            font-size: 17px;
+            letter-spacing: 0.2px;
+            text-align: center;
+            flex: 1;
+        }
+
+        .cal-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            margin-bottom: 6px;
+        }
+        .cal-weekdays span {
+            text-align: center;
+            font-size: 11px;
+            color: var(--cal-muted);
+            font-weight: 600;
+        }
+
+        .cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            row-gap: 4px;
+        }
+
+        .cal-cell {
+            position: relative;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+        }
+        .cal-cell.empty { visibility: hidden; }
+
+        .cal-day-btn {
+            all: unset;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: var(--cal-font-mono);
+            font-size: 13px;
+            color: var(--cal-ink);
+            position: relative;
+            transition: background 0.12s ease, color 0.12s ease, transform 0.06s ease;
+        }
+        .cal-day-btn:hover { background: rgba(255, 79, 19, 0.14); }
+        .cal-day-btn:active { transform: scale(0.94); }
+
+        .cal-day-btn.is-today {
+            border: 1.5px solid var(--cal-orange);
+        }
+
+        .cal-day-btn.is-selected {
+            background: var(--cal-orange);
+            color: #fff;
+            font-weight: 700;
+        }
+        .cal-day-btn.is-selected:hover { background: var(--cal-orange-dark); }
+
+        .cal-dot {
+            position: absolute;
+            bottom: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+        }
+        .cal-day-btn.is-selected .cal-dot { background: #fff !important; }
+
+        .cal-selected-readout {
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px dashed var(--cal-line);
+            font-size: 12px;
+            color: var(--cal-muted);
+            text-align: center;
+        }
+        .cal-selected-readout strong {
+            display: block;
+            font-family: var(--cal-font-display);
+            font-size: 14px;
+            color: var(--cal-ink);
+            margin-bottom: 2px;
+        }
+    </style>
+
+    <div class="cal-head">
+        <button type="button" class="cal-nav-btn" id="cal-prev" aria-label="Previous month">‹</button>
+        <div class="cal-title" id="cal-title"></div>
+        <button type="button" class="cal-nav-btn" id="cal-next" aria-label="Next month">›</button>
+    </div>
+
+    <div class="cal-weekdays">
+        <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+    </div>
+
+    <div class="cal-grid" id="cal-grid"></div>
+
+    <div class="cal-selected-readout" id="cal-readout"></div>
+</div>
+
+<script>
+(function () {
+    var root = document.getElementById('cal-widget');
+    if (!root || root.dataset.initialized) return;
+    root.dataset.initialized = 'true';
+
+    var monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'];
+
+    // Demo event markers: subject color per date (YYYY-M-D). Swap this out
+    // for real assignment-due-date data once the backend endpoint exists.
+    var subjectColors = {
+        math: '#ff4f13',
+        history: '#3b6fd6',
+        biology: '#3f9142',
+        english: '#e0b323',
+        physics: '#8a4fd6',
+        other: '#b5b5b5'
+    };
+    var eventsByDate = {
+        '2026-8-13': 'math',
+        '2026-8-14': 'history',
+        '2026-8-15': 'biology',
+        '2026-8-17': 'physics',
+        '2026-8-19': 'math',
+        '2026-8-21': 'other'
+    };
+
+    var today = new Date();
+    var state = {
+        year: parseInt(root.dataset.year, 10) || today.getFullYear(),
+        month: (parseInt(root.dataset.month, 10) || (today.getMonth() + 1)) - 1, // 0-indexed
+        selected: null
+    };
+    // Default the selected day to "today" if it falls in the shown month,
+    // otherwise default to the 12th to mirror the initial mock state.
+    state.selected = (today.getFullYear() === state.year && today.getMonth() === state.month)
+        ? today.getDate()
+        : 12;
+
+    var titleEl = root.querySelector('#cal-title');
+    var gridEl = root.querySelector('#cal-grid');
+    var readoutEl = root.querySelector('#cal-readout');
+    var prevBtn = root.querySelector('#cal-prev');
+    var nextBtn = root.querySelector('#cal-next');
+
+    function isToday(y, m, d) {
+        return today.getFullYear() === y && today.getMonth() === m && today.getDate() === d;
+    }
+
+    function formatSelected(y, m, d) {
+        var weekday = new Date(y, m, d).toLocaleDateString('en-US', { weekday: 'long' });
+        return weekday + ', ' + monthNames[m].slice(0, 3) + ' ' + d;
+    }
+
+    function notify(y, m, d) {
+        readoutEl.innerHTML = '<strong>' + formatSelected(y, m, d) + '</strong>Selected date';
+        root.dispatchEvent(new CustomEvent('studydesk:dateSelected', {
+            bubbles: true,
+            detail: { year: y, month: m + 1, day: d }
+        }));
+    }
+
+    function render() {
+        var y = state.year, m = state.month;
+        titleEl.textContent = monthNames[m] + ' ' + y;
+
+        var firstDayIndex = new Date(y, m, 1).getDay();
+        var daysInMonth = new Date(y, m + 1, 0).getDate();
+
+        gridEl.innerHTML = '';
+
+        for (var i = 0; i < firstDayIndex; i++) {
+            var empty = document.createElement('div');
+            empty.className = 'cal-cell empty';
+            gridEl.appendChild(empty);
+        }
+
+        for (var day = 1; day <= daysInMonth; day++) {
+            (function (day) {
+                var cell = document.createElement('div');
+                cell.className = 'cal-cell';
+
+                var btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'cal-day-btn';
+                btn.textContent = day;
+
+                if (isToday(y, m, day)) btn.classList.add('is-today');
+                if (state.selected === day) btn.classList.add('is-selected');
+
+                var key = y + '-' + (m + 1) + '-' + day;
+                if (eventsByDate[key]) {
+                    var dot = document.createElement('span');
+                    dot.className = 'cal-dot';
+                    dot.style.background = subjectColors[eventsByDate[key]] || subjectColors.other;
+                    btn.appendChild(dot);
+                }
+
+                btn.addEventListener('click', function () {
+                    state.selected = day;
+                    render();
+                    notify(y, m, day);
+                });
+
+                cell.appendChild(btn);
+                gridEl.appendChild(cell);
+            })(day);
+        }
+
+        if (state.selected && state.selected <= daysInMonth) {
+            readoutEl.innerHTML = '<strong>' + formatSelected(y, m, state.selected) + '</strong>Selected date';
+        } else {
+            readoutEl.innerHTML = '';
+        }
+    }
+
+    prevBtn.addEventListener('click', function () {
+        state.month -= 1;
+        if (state.month < 0) { state.month = 11; state.year -= 1; }
+        state.selected = null;
+        render();
+    });
+
+    nextBtn.addEventListener('click', function () {
+        state.month += 1;
+        if (state.month > 11) { state.month = 0; state.year += 1; }
+        state.selected = null;
+        render();
+    });
+
+    render();
+})();
+</script>

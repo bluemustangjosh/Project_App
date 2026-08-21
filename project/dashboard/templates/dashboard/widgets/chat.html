@@ -1,0 +1,329 @@
+<div class="chat-widget" id="chat-widget">
+    <style>
+        .chat-widget {
+            --chat-ink: var(--ink, #241609);
+            --chat-paper: var(--paper-card, #fffaf2);
+            --chat-orange: var(--orange, #ff4f13);
+            --chat-orange-dark: var(--orange-dark, #ed3f08);
+            --chat-line: var(--line, #ddbf97);
+            --chat-muted: var(--text-muted, #774313);
+            --chat-font-display: var(--font-display, Georgia, 'Times New Roman', serif);
+            --chat-font-mono: var(--font-mono, 'Courier New', monospace);
+            --chat-font-body: var(--font-body, Arial, Helvetica, sans-serif);
+            --chat-bubble-other: #ece6d8;
+            --chat-avatar-blue: #4c6fd1;
+
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 420px;
+            font-family: var(--chat-font-body);
+            color: var(--chat-ink);
+        }
+        .chat-widget * { box-sizing: border-box; }
+
+        .chat-widget h2 {
+            margin: 0 0 14px;
+            font-family: var(--chat-font-display);
+            font-weight: 700;
+        }
+
+        /* ---- Tabs ---- */
+        .chat-tabs {
+            display: flex;
+            gap: 18px;
+            border-bottom: 1px solid var(--chat-line);
+            margin-bottom: 14px;
+        }
+        .chat-tab {
+            all: unset;
+            cursor: default;
+            font-family: var(--chat-font-body);
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--chat-orange);
+            padding-bottom: 9px;
+            border-bottom: 2px solid var(--chat-orange);
+        }
+
+        /* ---- Message list ---- */
+        .chat-log {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            padding-right: 2px;
+            margin-bottom: 14px;
+        }
+        .chat-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            max-width: 88%;
+        }
+        .chat-row.from-me {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+        .chat-avatar {
+            flex-shrink: 0;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--chat-avatar-blue);
+            color: #fff;
+            font-family: var(--chat-font-body);
+            font-size: 10px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .chat-row.from-me .chat-avatar {
+            background: var(--chat-orange);
+        }
+
+        .chat-bubble-wrap {
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-row.from-me .chat-bubble-wrap {
+            align-items: flex-end;
+        }
+
+        .chat-sender {
+            font-family: var(--chat-font-mono);
+            font-size: 11px;
+            color: var(--chat-muted);
+            margin-bottom: 4px;
+        }
+
+        .chat-bubble {
+            background: var(--chat-bubble-other);
+            color: var(--chat-ink);
+            padding: 10px 14px;
+            border-radius: 14px;
+            border-bottom-left-radius: 4px;
+            font-size: 14px;
+            line-height: 1.4;
+            max-width: 100%;
+            word-wrap: break-word;
+        }
+        .chat-row.from-me .chat-bubble {
+            background: var(--chat-orange);
+            color: #fff8ee;
+            border-bottom-left-radius: 14px;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-time {
+            font-family: var(--chat-font-mono);
+            font-size: 10px;
+            color: var(--chat-muted);
+            margin-top: 4px;
+        }
+        .chat-row.from-me .chat-time { text-align: right; }
+
+        .chat-typing {
+            font-family: var(--chat-font-mono);
+            font-size: 11px;
+            color: var(--chat-muted);
+            font-style: italic;
+            min-height: 14px;
+            padding-left: 38px;
+        }
+
+        /* ---- Composer ---- */
+        .chat-composer {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            border-top: 1px dashed var(--chat-line);
+            padding-top: 14px;
+        }
+        .chat-input {
+            flex: 1;
+            font-family: var(--chat-font-body);
+            font-size: 14px;
+            color: var(--chat-ink);
+            background: var(--chat-paper);
+            border: 1.5px solid var(--chat-line);
+            border-radius: 20px;
+            padding: 10px 16px;
+            outline: none;
+            transition: border-color 0.12s ease;
+        }
+        .chat-input:focus { border-color: var(--chat-orange); }
+
+        .chat-send-btn {
+            all: unset;
+            flex-shrink: 0;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--chat-orange);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.12s ease, transform 0.06s ease;
+        }
+        .chat-send-btn:hover { background: var(--chat-orange-dark); }
+        .chat-send-btn:active { transform: scale(0.92); }
+
+        .chat-log::-webkit-scrollbar { width: 6px; }
+        .chat-log::-webkit-scrollbar-thumb { background: var(--chat-line); border-radius: 4px; }
+    </style>
+
+    <h2>Class Chat</h2>
+
+    <div class="chat-tabs">
+        <span class="chat-tab">Class Chat</span>
+    </div>
+
+    <div class="chat-log" id="chat-log"></div>
+    <div class="chat-typing" id="chat-typing"></div>
+
+    <div class="chat-composer">
+        <input type="text" class="chat-input" id="chat-input" placeholder="Type a message..." autocomplete="off">
+        <button type="button" class="chat-send-btn" id="chat-send" aria-label="Send message">&#8594;</button>
+    </div>
+</div>
+
+<script>
+(function () {
+    var root = document.getElementById('chat-widget');
+    if (!root || root.dataset.initialized) return;
+    root.dataset.initialized = 'true';
+
+    var logEl = root.querySelector('#chat-log');
+    var typingEl = root.querySelector('#chat-typing');
+    var inputEl = root.querySelector('#chat-input');
+    var sendBtn = root.querySelector('#chat-send');
+
+    // Seed conversation, mirrors the class chat mock.
+    var messages = [
+        { sender: 'Ms. Rivera', initials: 'MR', mine: false,
+          text: "Don't forget your Biology report is due Thursday! Reach out if you need help with citations.",
+          time: '9:14 AM' },
+        { sender: 'You', initials: 'ME', mine: true,
+          text: "Thanks! I'll have it in by Wednesday evening.",
+          time: '9:22 AM' },
+        { sender: 'Alex K.', initials: 'AK', mine: false,
+          text: "Anyone else struggling with the Newton's Laws quiz prep? Want to study together?",
+          time: '11:05 AM' },
+        { sender: 'You', initials: 'ME', mine: true,
+          text: "I'm in! Saturday at the library?",
+          time: '11:08 AM' },
+        { sender: 'Alex K.', initials: 'AK', mine: false,
+          text: 'Perfect, 2pm works for me.',
+          time: '11:10 AM' }
+    ];
+
+    // Canned auto-replies so the composer feels alive without a backend.
+    var autoReplies = [
+        { sender: 'Alex K.', initials: 'AK', text: "Sounds good, see you then!" },
+        { sender: 'Ms. Rivera', initials: 'MR', text: "Great question, let's cover that in class." },
+        { sender: 'Alex K.', initials: 'AK', text: "Haha same, this quiz is rough." },
+        { sender: 'Ms. Rivera', initials: 'MR', text: "Noted, thanks for the update!" }
+    ];
+
+    function formatTime(d) {
+        var h = d.getHours();
+        var m = d.getMinutes();
+        var suffix = h >= 12 ? 'PM' : 'AM';
+        h = h % 12;
+        if (h === 0) h = 12;
+        return h + ':' + (m < 10 ? '0' : '') + m + ' ' + suffix;
+    }
+
+    function renderMessage(msg) {
+        var row = document.createElement('div');
+        row.className = 'chat-row' + (msg.mine ? ' from-me' : '');
+
+        var avatar = document.createElement('div');
+        avatar.className = 'chat-avatar';
+        avatar.textContent = msg.initials;
+
+        var wrap = document.createElement('div');
+        wrap.className = 'chat-bubble-wrap';
+
+        if (!msg.mine) {
+            var senderEl = document.createElement('div');
+            senderEl.className = 'chat-sender';
+            senderEl.textContent = msg.sender;
+            wrap.appendChild(senderEl);
+        }
+
+        var bubble = document.createElement('div');
+        bubble.className = 'chat-bubble';
+        bubble.textContent = msg.text;
+        wrap.appendChild(bubble);
+
+        var time = document.createElement('div');
+        time.className = 'chat-time';
+        time.textContent = msg.time;
+        wrap.appendChild(time);
+
+        row.appendChild(avatar);
+        row.appendChild(wrap);
+        logEl.appendChild(row);
+    }
+
+    function renderAll() {
+        logEl.innerHTML = '';
+        messages.forEach(renderMessage);
+        scrollToBottom();
+    }
+
+    function scrollToBottom() {
+        logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function sendMessage() {
+        var text = inputEl.value.trim();
+        if (!text) return;
+
+        var msg = { sender: 'You', initials: 'ME', mine: true, text: text, time: formatTime(new Date()) };
+        messages.push(msg);
+        renderMessage(msg);
+        scrollToBottom();
+        inputEl.value = '';
+        inputEl.focus();
+
+        maybeAutoReply();
+    }
+
+    function maybeAutoReply() {
+        var reply = autoReplies[Math.floor(Math.random() * autoReplies.length)];
+        typingEl.textContent = reply.sender + ' is typing...';
+
+        setTimeout(function () {
+            typingEl.textContent = '';
+            var msg = {
+                sender: reply.sender,
+                initials: reply.initials,
+                mine: false,
+                text: reply.text,
+                time: formatTime(new Date())
+            };
+            messages.push(msg);
+            renderMessage(msg);
+            scrollToBottom();
+        }, 900 + Math.random() * 700);
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+    inputEl.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+
+    renderAll();
+})();
+</script>
