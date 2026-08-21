@@ -34,11 +34,13 @@ def class_list_view(request):
         return redirect('login')
 
     student = Student.objects.get(id=student_id)
-    all_classes = Class.objects.all()
+
+    # Only this student's classes
+    classes = student.classes.all()
 
     return render(request, 'classes/class_list.html', {
         'student': student,
-        'all_classes': all_classes
+        'classes': classes
     })
 
 def add_class_view(request):
@@ -49,15 +51,25 @@ def add_class_view(request):
     student = Student.objects.get(id=student_id)
 
     if request.method == 'POST':
-        class_id = request.POST.get('class_id')
-        if class_id:
-            selected_class = Class.objects.get(id=class_id)
-            student.classes.add(selected_class)
-            student.save()
-            return redirect('home')
+        name = request.POST.get('name')
+        code = request.POST.get('code')
+        section = request.POST.get('section')
 
-    all_classes = Class.objects.all()
-    return render(request, 'classes/class_list.html', {'all_classes': all_classes})
+        print(">>> ADD CLASS POST FIRED <<<")
+        print("name:", name, "code:", code, "section:", section)
+
+        if name and code and section:
+            new_class = Class.objects.create(
+                name=name,
+                code=code,
+                section=section
+            )
+            student.classes.add(new_class)
+
+        return redirect('class_list')
+
+    return render(request, 'classes/add_class.html')
+
 
 def landing(request):
     return render(request, 'home/home.html')
