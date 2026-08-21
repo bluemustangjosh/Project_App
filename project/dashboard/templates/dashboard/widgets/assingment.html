@@ -1,0 +1,441 @@
+<!-- templates/dashboard/widgets/assignments.html -->
+
+<div class="assignments-widget">
+    <!-- UPCOMING SECTION -->
+    <div class="upcoming-section">
+        <h2 class="section-title">📅 UPCOMING</h2>
+        {% if upcoming_assignments %}
+            {% for assignment in upcoming_assignments %}
+            <div class="assignment-row {% if assignment.is_due_today %}due-today{% endif %}">
+                <div class="assignment-name">{{ assignment.title }}</div>
+                <div class="assignment-meta">
+                    {% if assignment.is_due_today %}
+                        <span class="due-badge">Due today!</span>
+                    {% elif assignment.is_overdue %}
+                        <span class="due-badge overdue">Overdue!</span>
+                    {% else %}
+                        <span class="days-left">{{ assignment.days_left }}d left</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-upcoming">
+                <p>No upcoming assignments! 🎉</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- QUICK ADD BUTTON -->
+    <div class="quick-add-section">
+        <button class="btn-add-assignment" onclick="openAssignmentModal()">
+            <span class="plus-icon">+</span> Add Assignment
+        </button>
+    </div>
+</div>
+
+<!-- ============================================ -->
+<!-- ADD ASSIGNMENT MODAL (Popup Form) -->
+<!-- ============================================ -->
+<div id="assignmentModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>📝 Add New Assignment</h3>
+            <button class="modal-close" onclick="closeAssignmentModal()">✕</button>
+        </div>
+        
+        <form id="assignmentForm" method="post" action="{% url 'add_assignment' %}">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="assignmentTitle">Assignment Title *</label>
+                <input type="text" id="assignmentTitle" name="title" placeholder="e.g., Chapter 7 Problem Set" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="assignmentClass">Class *</label>
+                <select id="assignmentClass" name="class_id" required>
+                    <option value="">Select a class...</option>
+                    {% for class in classes %}
+                        <option value="{{ class.id }}">{{ class.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="assignmentDescription">Description</label>
+                <textarea id="assignmentDescription" name="description" rows="3" placeholder="Add details about this assignment..."></textarea>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group half">
+                    <label for="assignmentDueDate">Due Date *</label>
+                    <input type="date" id="assignmentDueDate" name="due_date" required>
+                </div>
+                <div class="form-group half">
+                    <label for="assignmentPriority">Priority</label>
+                    <select id="assignmentPriority" name="priority">
+                        <option value="high">🔴 High</option>
+                        <option value="medium" selected>🟡 Medium</option>
+                        <option value="low">🟢 Low</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="assignmentPoints">Points</label>
+                <input type="number" id="assignmentPoints" name="points" value="100" min="0" max="1000">
+            </div>
+            
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeAssignmentModal()">Cancel</button>
+                <button type="submit" class="btn-submit">➕ Add Assignment</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ============================================ -->
+<!-- STYLES -->
+<!-- ============================================ -->
+<style>
+    /* ----- Assignment Widget Styles - StudyDesk Theme ----- */
+    .assignments-widget {
+        font-family: var(--font-body, Arial, Helvetica, sans-serif);
+    }
+    
+    /* Upcoming Section */
+    .upcoming-section {
+        margin-bottom: 16px;
+    }
+    
+    .section-title {
+        font-family: var(--font-display, Georgia, 'Times New Roman', serif);
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-muted, #774313);
+        letter-spacing: 0.5px;
+        margin: 0 0 12px 0;
+        text-transform: uppercase;
+        border-bottom: 2px solid var(--line, #ddbf97);
+        padding-bottom: 8px;
+    }
+    
+    .assignment-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(221, 191, 151, 0.3);
+        transition: background 0.2s;
+    }
+    
+    .assignment-row:last-child {
+        border-bottom: none;
+    }
+    
+    .assignment-row:hover {
+        background: rgba(255, 248, 238, 0.5);
+        padding-left: 8px;
+        padding-right: 8px;
+        border-radius: 6px;
+    }
+    
+    .assignment-row.due-today {
+        background: rgba(255, 79, 19, 0.05);
+        border-left: 3px solid var(--orange, #ff4f13);
+        padding-left: 8px;
+        border-radius: 4px;
+    }
+    
+    .assignment-name {
+        font-size: 15px;
+        font-weight: 500;
+        color: var(--ink, #241609);
+        font-family: var(--font-display, Georgia, 'Times New Roman', serif);
+    }
+    
+    .assignment-meta {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
+    }
+    
+    .due-badge {
+        background: var(--orange, #ff4f13);
+        color: white;
+        padding: 2px 12px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        font-family: var(--font-body, Arial, sans-serif);
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+    
+    .due-badge.overdue {
+        background: #c0392b;
+    }
+    
+    .days-left {
+        color: var(--text-muted, #774313);
+        font-size: 13px;
+        font-family: var(--font-mono, 'Courier New', monospace);
+    }
+    
+    .empty-upcoming {
+        text-align: center;
+        padding: 20px 10px;
+        color: var(--text-muted, #774313);
+        font-family: var(--font-display, Georgia, 'Times New Roman', serif);
+        font-style: italic;
+    }
+    
+    .empty-upcoming p {
+        margin: 0;
+        font-size: 14px;
+    }
+    
+    /* Quick Add Button */
+    .quick-add-section {
+        margin-top: 8px;
+        padding-top: 12px;
+        border-top: 2px solid var(--line, #ddbf97);
+    }
+    
+    .btn-add-assignment {
+        background: var(--paper-card, #fffaf2);
+        color: var(--ink, #241609);
+        border: 2px solid var(--ink, #241609);
+        border-radius: 7px;
+        padding: 10px 20px;
+        font-family: var(--font-body, Arial, sans-serif);
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: 3px 3px 0 var(--ink, #241609);
+    }
+    
+    .btn-add-assignment:hover {
+        background: var(--orange, #ff4f13);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 5px 5px 0 var(--ink, #241609);
+    }
+    
+    .plus-icon {
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 1;
+    }
+    
+    /* ----- Modal Styles ----- */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    
+    .modal-content {
+        background: var(--paper-card, #fffaf2);
+        border: 3px solid var(--ink, #241609);
+        border-radius: 13px;
+        box-shadow: 8px 8px 0 var(--ink, #241609);
+        padding: 28px;
+        max-width: 500px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid var(--line, #ddbf97);
+    }
+    
+    .modal-header h3 {
+        margin: 0;
+        font-family: var(--font-display, Georgia, 'Times New Roman', serif);
+        font-size: 20px;
+        color: var(--ink, #241609);
+    }
+    
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: var(--text-muted, #774313);
+        padding: 0 6px;
+        font-family: var(--font-body, Arial, sans-serif);
+    }
+    
+    .modal-close:hover {
+        color: var(--ink, #241609);
+    }
+    
+    .form-group {
+        margin-bottom: 16px;
+    }
+    
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        font-size: 13px;
+        margin-bottom: 4px;
+        color: var(--ink, #241609);
+        font-family: var(--font-body, Arial, sans-serif);
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border: 2px solid var(--line, #ddbf97);
+        border-radius: 7px;
+        font-size: 14px;
+        font-family: var(--font-body, Arial, sans-serif);
+        background: white;
+        transition: border-color 0.2s;
+        color: var(--ink, #241609);
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: var(--orange, #ff4f13);
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+    
+    .form-row .form-group.half {
+        margin-bottom: 0;
+    }
+    
+    .modal-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        margin-top: 20px;
+        padding-top: 16px;
+        border-top: 2px solid var(--line, #ddbf97);
+    }
+    
+    .modal-actions button {
+        padding: 10px 20px;
+        border-radius: 7px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: var(--font-body, Arial, sans-serif);
+    }
+    
+    .btn-cancel {
+        background: none;
+        border: 2px solid var(--line, #ddbf97);
+        color: var(--text-muted, #774313);
+    }
+    
+    .btn-cancel:hover {
+        background: #f0e8dd;
+    }
+    
+    .btn-submit {
+        background: var(--orange, #ff4f13);
+        border: 2px solid var(--ink, #241609);
+        color: white;
+        box-shadow: 3px 3px 0 var(--ink, #241609);
+    }
+    
+    .btn-submit:hover {
+        background: var(--orange-dark, #ed3f08);
+        transform: translateY(-1px);
+    }
+    
+    /* Responsive */
+    @media (max-width: 600px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+        
+        .assignment-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+        }
+        
+        .assignment-meta {
+            width: 100%;
+            justify-content: flex-start;
+        }
+        
+        .modal-content {
+            padding: 20px;
+        }
+    }
+</style>
+
+<script>
+    // Open modal
+    function openAssignmentModal() {
+        document.getElementById('assignmentModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    
+    // Close modal
+    function closeAssignmentModal() {
+        document.getElementById('assignmentModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+    
+    // Close modal when clicking outside
+    document.addEventListener('click', function(event) {
+        const modal = document.getElementById('assignmentModal');
+        if (event.target === modal) {
+            closeAssignmentModal();
+        }
+    });
+    
+    // Auto-close modal on form submission success
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('assignmentForm');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const submitBtn = this.querySelector('.btn-submit');
+                submitBtn.textContent = 'Adding...';
+                submitBtn.disabled = true;
+            });
+        }
+    });
+</script>
