@@ -1,0 +1,19 @@
+{% load static %}
+<h3 class="subjects-title">📚 {{ student.first_name }}'s Classes</h3>
+
+<div class="subject-list">
+    {% for class in student.classes.all %}
+    <div class="subject-item">
+        <span class="subject-name">{{ class.name }}</span>
+        <span class="subject-count">{{ class.code }} - Sec {{ class.section }}</span>
+    </div>
+    {% empty %}
+    <div class="empty-subjects">
+        <p>No classes yet. Add your first class!</p>
+    </div>
+    {% endfor %}
+</div>
+
+<a href="{% url 'class_list' %}" class="btn-add-subject" style="text-decoration:none; display:block; text-align:center;">
+    + Add Class
+</a>
